@@ -3,157 +3,510 @@
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#75d7ff">
+  <meta name="theme-color" content="#102b4e">
+  <meta name="description" content="NIKO POGROMCA — kolorowa, przyjazna dzieciom przygodowa platformówka.">
   <title>NIKO POGROMCA — Strażnik Kolorów</title>
   <style>
-    :root { color-scheme: light; font-family: system-ui, sans-serif; background: #eaf8ff; color: #17324d; }
+    :root {
+      color-scheme: dark;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: #102b4e;
+      color: #f5fbff;
+      font-synthesis: none;
+    }
     * { box-sizing: border-box; }
-    body { max-width: 1000px; margin: 0 auto; padding: 18px; }
-    h1 { margin: 0; color: #176f9d; }
-    p { margin: 8px 0; }
-    .panel { background: white; border: 2px solid #c9e8f5; border-radius: 16px; padding: 14px; margin: 12px 0; box-shadow: 0 4px 14px #174b6614; }
-    .top { display: flex; gap: 12px; flex-wrap: wrap; align-items: center; justify-content: space-between; }
-    input, button { font: inherit; border-radius: 10px; padding: 9px 12px; border: 2px solid #b8dcea; }
-    button { background: #ffda55; border-color: #e8bb2d; cursor: pointer; font-weight: 700; }
-    button:hover { filter: brightness(.97); }
+    body {
+      min-width: 320px;
+      min-height: 100vh;
+      margin: 0;
+      padding: 20px;
+      background: radial-gradient(ellipse at 50% -10%, #245f83 0, #102b4e 58%, #0b1c36 100%);
+    }
+    button, input { font: inherit; }
+    button {
+      min-height: 44px;
+      border: 2px solid #ffd35a;
+      border-radius: 12px;
+      padding: 9px 16px;
+      background: linear-gradient(#ffe780, #ffc83e);
+      color: #392b08;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 4px 0 #b9821c;
+      transition: transform .12s ease, filter .12s ease;
+    }
+    button:hover:not(:disabled) { filter: brightness(1.08); transform: translateY(-1px); }
+    button:active:not(:disabled) { transform: translateY(2px); box-shadow: 0 2px 0 #b9821c; }
     button:disabled { opacity: .48; cursor: not-allowed; }
-    #game { display: block; width: 100%; aspect-ratio: 16 / 9; background: #8edcff; border: 3px solid #4d9fc1; border-radius: 14px; }
-    .levels, .touch-controls { display: flex; flex-wrap: wrap; gap: 8px; align-items: center; }
-    .touch-controls { justify-content: center; }
-    .touch-controls button { min-width: 68px; font-size: 20px; touch-action: none; }
-    #message { min-height: 1.5em; font-weight: 700; color: #176f55; }
-    #ranking { margin: 6px 0 0; padding-left: 24px; }
-    .muted { color: #527084; font-size: .92rem; }
+    button.secondary { background: linear-gradient(#e4f6ff, #b8e4f7); border-color: #9bd5ed; box-shadow: 0 4px 0 #538dac; color: #143952; }
+    button.quiet { background: #18395b; border-color: #3a6585; box-shadow: 0 4px 0 #091a2d; color: #eef9ff; }
+    .shell { width: min(1120px, 100%); margin: 0 auto; }
+    .topbar { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin: 0 0 12px; }
+    .brand { display: flex; align-items: center; gap: 12px; }
+    .brand-mark { display: grid; width: 52px; height: 52px; place-items: center; border: 2px solid #73d7ee; border-radius: 16px; background: #17456a; font-size: 30px; box-shadow: 0 5px 0 #09223a; }
+    h1 { margin: 0; color: #fff1a7; font-size: clamp(1.35rem, 3.5vw, 2rem); letter-spacing: .04em; line-height: 1.05; text-shadow: 0 3px #8f5b25; }
+    .tagline { margin: 4px 0 0; color: #b7eaff; font-size: .88rem; }
+    .hud { display: flex; justify-content: flex-end; gap: 8px; flex-wrap: wrap; }
+    .badge { display: inline-flex; min-height: 42px; align-items: center; gap: 7px; padding: 7px 12px; border: 1px solid #3a6685; border-radius: 12px; background: #143758; font-weight: 800; white-space: nowrap; }
+    .game-panel { overflow: hidden; border: 2px solid #417b98; border-radius: 20px; background: #0b2038; box-shadow: 0 14px 36px #0005; }
+    .stage { position: relative; overflow: hidden; background: #71d6f2; }
+    canvas { display: block; width: 100%; aspect-ratio: 16 / 9; background: #71d6f2; image-rendering: auto; }
+    .screen {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: clamp(12px, 3vw, 28px);
+      background: linear-gradient(90deg, #081a2bd9, #102b4dcc);
+      text-align: center;
+    }
+    .screen[hidden] { display: none; }
+    .card { width: min(620px, 100%); max-height: 100%; overflow: auto; padding: clamp(16px, 3vw, 28px); border: 2px solid #75c9e5; border-radius: 22px; background: linear-gradient(145deg, #17466a, #102d4c); box-shadow: 0 12px 35px #06142699; }
+    .card h2 { margin: 0 0 8px; color: #ffe985; font-size: clamp(1.5rem, 5vw, 2.7rem); line-height: 1.05; text-shadow: 0 3px #8a5524; }
+    .card p { margin: 8px 0 16px; color: #e0f6ff; line-height: 1.5; }
+    .hero-art { margin: 2px 0 8px; font-size: clamp(36px, 8vw, 68px); filter: drop-shadow(0 5px 2px #09223a); }
+    .form-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin: 14px 0; }
+    input { width: min(260px, 100%); min-height: 46px; border: 2px solid #90d5eb; border-radius: 12px; padding: 9px 12px; background: #f5fcff; color: #17324d; }
+    .button-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 12px; }
+    .level-picks { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin: 14px 0; }
+    .level-picks button { padding: 8px 11px; font-size: .88rem; }
+    .help { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; padding: 12px 16px; color: #d6effb; font-size: .9rem; }
+    .help strong { color: #fff1a7; }
+    .below { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 12px; margin-top: 12px; }
+    .status { min-height: 1.5em; margin: 0; color: #d5f3ff; font-weight: 700; }
+    .touch-controls { display: flex; gap: 8px; justify-content: center; }
+    .touch-controls button { min-width: 58px; min-height: 48px; padding: 6px 12px; touch-action: none; user-select: none; }
+    .touch-controls button.pressed { transform: translateY(2px); filter: brightness(.9); }
+    .rank-panel { margin-top: 14px; padding: 14px 18px; border: 1px solid #315c7c; border-radius: 16px; background: #112e4b; }
+    .rank-title { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
+    .rank-title h2 { margin: 0; color: #ffe985; font-size: 1rem; }
+    .rank-panel ol { display: flex; flex-wrap: wrap; gap: 8px 28px; margin: 10px 0 0; padding-left: 24px; color: #d9f4ff; }
+    .muted { color: #a9ccdd; font-size: .85rem; }
+    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
+    @media (max-width: 620px) {
+      body { padding: 10px; }
+      .topbar { align-items: flex-start; }
+      .brand-mark { width: 42px; height: 42px; font-size: 24px; border-radius: 13px; }
+      .tagline { font-size: .78rem; }
+      .hud { gap: 5px; }
+      .badge { min-height: 36px; padding: 5px 8px; font-size: .82rem; }
+      .help { justify-content: center; text-align: center; padding: 9px; font-size: .8rem; }
+      .below { grid-template-columns: 1fr; }
+      .status { text-align: center; }
+      .touch-controls button { min-width: 68px; }
+      .rank-panel ol { display: block; }
+    }
+    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; } }
   </style>
 </head>
 <body>
-  <header class="top">
-    <div><h1>🌈 NIKO POGROMCA</h1><p class="muted">Strażnik Kolorów — przygoda dopiero się zaczyna!</p></div>
-    <div><strong>⭐ Punkty:</strong> <span id="score">0</span></div>
-  </header>
-  <section class="panel top">
-    <label>Imię gracza: <input id="playerName" maxlength="16" placeholder="Wpisz pseudonim" autocomplete="off"></label>
-    <button id="saveName">Zapisz pseudonim</button><button id="startButton">Graj!</button>
-  </section>
-  <section class="panel">
-    <div class="levels" id="levels"><strong>Poziomy:</strong></div>
-    <p id="message" aria-live="polite">Wpisz pseudonim i kliknij „Graj!”.</p>
-    <canvas id="game" width="960" height="540" aria-label="Gra platformowa Niko Pogromca"></canvas>
-    <p class="muted">Sterowanie: ← → lub A/D — ruch, ↑ / W / spacja — skok. Dotrzyj do tęczowej bramy!</p>
-    <div class="touch-controls" aria-label="Sterowanie dotykowe"><button data-key="left" aria-label="W lewo">◀</button><button data-key="jump" aria-label="Skok">⤒</button><button data-key="right" aria-label="W prawo">▶</button></div>
-  </section>
-  <section class="panel"><strong>🏆 Lokalny ranking</strong><p class="muted">Wyniki są widoczne tylko w tej przeglądarce.</p><ol id="ranking"></ol></section>
+  <main class="shell">
+    <header class="topbar">
+      <div class="brand"><div class="brand-mark" aria-hidden="true">🌈</div><div><h1>NIKO POGROMCA</h1><p class="tagline">Strażnik Kolorów — ruszaj na przygodę!</p></div></div>
+      <div class="hud" aria-label="Wynik gry">
+        <span class="badge">⭐ <span id="score">0</span></span>
+        <span class="badge" id="lives" aria-label="Życia">❤️❤️❤️</span>
+        <span class="badge">🌟 <span id="levelLabel">Menu</span></span>
+      </div>
+    </header>
+
+    <section class="game-panel" aria-label="Gra Niko Pogromca">
+      <div class="stage">
+        <canvas id="game" width="960" height="540" aria-label="Kolorowa platformówka. Skacz, zbieraj gwiazdki i omijaj stworki."></canvas>
+        <section class="screen" id="screen" aria-live="polite">
+          <div class="card">
+            <div class="hero-art" aria-hidden="true">🧒 ⭐ 🌈</div>
+            <h2 id="screenTitle">NIKO POGROMCA</h2>
+            <p id="screenText">Szary Cień ukradł kolory! Skacz, zbieraj gwiazdki, ratuj świetliki i przywróć radość krainie.</p>
+            <div class="form-row" id="nameRow"><label class="sr-only" for="playerName">Pseudonim gracza</label><input id="playerName" maxlength="16" placeholder="Wpisz swój pseudonim" autocomplete="off"></div>
+            <div class="level-picks" id="levelPicks" aria-label="Wybierz odblokowany poziom"></div>
+            <div class="button-row" id="screenButtons"></div>
+            <p class="muted" id="screenHint">Sterowanie: ← → lub A/D, skok: ↑ / W / spacja. Na telefonie użyj przycisków pod grą.</p>
+          </div>
+        </section>
+      </div>
+      <div class="help"><span><strong>Ruch:</strong> ← → lub A/D</span><span><strong>Skok:</strong> ↑ / W / spacja</span><span><strong>Cel:</strong> zbierz skarby i dotrzyj do tęczy</span></div>
+    </section>
+    <div class="below"><p class="status" id="status" aria-live="polite">Wpisz pseudonim i rozpocznij przygodę!</p>
+      <div class="touch-controls" aria-label="Sterowanie dotykowe"><button data-key="left" aria-label="Idź w lewo">◀</button><button data-key="jump" aria-label="Skocz">⤒</button><button data-key="right" aria-label="Idź w prawo">▶</button></div>
+    </div>
+    <section class="rank-panel"><div class="rank-title"><h2>🏆 Najlepszy wynik w tej przeglądarce</h2><span class="muted">Ranking lokalny</span></div><ol id="ranking"></ol><p class="muted">Postęp i wyniki zapisują się tylko na tym urządzeniu.</p></section>
+  </main>
 <script>
 (() => {
-  const SAVE_KEY = "niko-pogromca-save-v1", BOARD_KEY = "niko-pogromca-ranking-v1";
-  const levels = [
-    { name: "Zaczarowany Las", width: 1700, goal: 1580, platforms: [[0,480,340,60],[390,430,180,30],[620,380,190,30],[860,440,210,30],[1120,380,180,30],[1350,460,350,80]], stars: [[160,430],[460,380],[700,330],[960,390],[1200,330],[1450,410]], firefly: [870,395] },
-    { name: "Wyspy Bąbelków", width: 1800, goal: 1680, platforms: [[0,480,260,60],[310,420,160,28],[520,350,160,28],[750,410,170,28],[990,330,170,28],[1230,390,170,28],[1470,460,330,80]], stars: [[370,370],[580,300],[810,360],[1050,280],[1290,340],[1580,410]], firefly: [1000,280] },
-    { name: "Góry Chmur", width: 1900, goal: 1780, platforms: [[0,480,300,60],[350,400,150,28],[560,330,160,28],[790,390,160,28],[1020,300,160,28],[1260,360,170,28],[1500,300,150,28],[1690,460,210,80]], stars: [[400,350],[610,280],[840,340],[1070,250],[1310,310],[1540,250]], firefly: [1260,310] }
+  "use strict";
+  const SAVE_KEY = "niko-pogromca-save-v1";
+  const BOARD_KEY = "niko-pogromca-ranking-v1";
+  const W = 960, H = 540, GRAVITY = 0.58, MAX_FALL = 14;
+  const LEVELS = [
+    {
+      name: "Zaczarowany Las", sky: ["#65cfee", "#e4f9d5"], ground: "#75482e", grass: "#49b653", width: 1700, goal: 1580,
+      platforms: [[0,480,340,60],[390,430,180,30],[620,380,190,30],[860,440,210,30],[1120,380,180,30],[1350,460,350,80]],
+      stars: [[160,430],[460,380],[700,330],[960,390],[1200,330],[1450,410]], firefly: [870,395], enemies: [{x:260,y:448,min:220,max:315,speed:1.15},{x:900,y:408,min:875,max:1020,speed:1.3},{x:1440,y:428,min:1380,max:1630,speed:1.2}]
+    },
+    {
+      name: "Wyspy Bąbelków", sky: ["#52bfe9", "#e8fbff"], ground: "#83603d", grass: "#53c5a0", width: 1800, goal: 1680,
+      platforms: [[0,480,260,60],[310,420,160,28],[520,350,160,28],[750,410,170,28],[990,330,170,28],[1230,390,170,28],[1470,460,330,80]],
+      stars: [[370,370],[580,300],[810,360],[1050,280],[1290,340],[1580,410]], firefly: [1000,280], enemies: [{x:340,y:388,min:320,max:430,speed:1.35},{x:790,y:378,min:760,max:875,speed:1.5},{x:1515,y:428,min:1490,max:1740,speed:1.45}]
+    },
+    {
+      name: "Góry Chmur", sky: ["#759be8", "#f2eaff"], ground: "#66517f", grass: "#9cdb8c", width: 1900, goal: 1780,
+      platforms: [[0,480,300,60],[350,400,150,28],[560,330,160,28],[790,390,160,28],[1020,300,160,28],[1260,360,170,28],[1500,300,150,28],[1690,460,210,80]],
+      stars: [[400,350],[610,280],[840,340],[1070,250],[1310,310],[1540,250]], firefly: [1260,310], enemies: [{x:375,y:368,min:355,max:455,speed:1.4},{x:810,y:358,min:800,max:900,speed:1.6},{x:1505,y:268,min:1505,max:1600,speed:1.5}]
+    }
   ];
-  const canvas = document.querySelector("#game"), ctx = canvas.getContext("2d");
-  const nameInput = document.querySelector("#playerName"), scoreLabel = document.querySelector("#score");
-  const message = document.querySelector("#message"), levelButtons = document.querySelector("#levels"), rankingList = document.querySelector("#ranking");
-  function read(key, fallback) { try { return JSON.parse(localStorage.getItem(key)) || fallback; } catch { return fallback; } }
-  let save = read(SAVE_KEY, { name: "", score: 0, unlocked: 0, completed: [], collected: [] });
-  let board = read(BOARD_KEY, {}), currentLevel = 0, playing = false, cameraX = 0, frame = 0, stars = [], fireflyRescued = false;
+  const canvas = document.querySelector("#game");
+  const ctx = canvas.getContext("2d");
+  const screen = document.querySelector("#screen"), titleEl = document.querySelector("#screenTitle");
+  const textEl = document.querySelector("#screenText"), hintEl = document.querySelector("#screenHint");
+  const buttonsEl = document.querySelector("#screenButtons"), picksEl = document.querySelector("#levelPicks");
+  const nameRow = document.querySelector("#nameRow"), nameInput = document.querySelector("#playerName");
+  const statusEl = document.querySelector("#status"), scoreEl = document.querySelector("#score");
+  const livesEl = document.querySelector("#lives"), levelLabel = document.querySelector("#levelLabel");
+  const rankingEl = document.querySelector("#ranking");
   const keys = { left: false, right: false, jump: false };
-  const player = { x: 50, y: 390, w: 32, h: 42, vx: 0, vy: 0, grounded: false };
-  function renderLevels() {
-    levelButtons.innerHTML = "<strong>Poziomy:</strong>";
-    levels.forEach((level, index) => {
-      const button = document.createElement("button"); button.textContent = `${index + 1}. ${level.name}`;
-      button.disabled = index > save.unlocked; button.addEventListener("click", () => startLevel(index)); levelButtons.appendChild(button);
-    });
+  let save = loadSave();
+  let board = loadBoard();
+  let state = "menu", current = 0, cameraX = 0, lastTime = 0, animTime = 0;
+  let score = 0, lives = 3, player, stars = [], enemies = [], firefly, particles = [];
+  let jumpQueued = false, soundOn = true, audioContext = null;
+
+  function loadSave() {
+    try {
+      const raw = JSON.parse(localStorage.getItem(SAVE_KEY) || "null");
+      if (!raw || typeof raw !== "object") return { name: "", score: 0, unlocked: 0, completed: [], collected: [], rescued: [] };
+      return {
+        name: typeof raw.name === "string" ? raw.name.slice(0,16) : "",
+        score: Number.isFinite(raw.score) && raw.score >= 0 ? Math.floor(raw.score) : 0,
+        unlocked: Number.isInteger(raw.unlocked) ? Math.max(0, Math.min(LEVELS.length-1, raw.unlocked)) : 0,
+        completed: Array.isArray(raw.completed) ? raw.completed.filter(n => Number.isInteger(n) && n >= 0 && n < LEVELS.length) : [],
+        collected: Array.isArray(raw.collected) ? raw.collected.filter(v => typeof v === "string") : [],
+        rescued: Array.isArray(raw.rescued) ? raw.rescued.filter(n => Number.isInteger(n) && n >= 0 && n < LEVELS.length) : []
+      };
+    } catch { return { name: "", score: 0, unlocked: 0, completed: [], collected: [], rescued: [] }; }
+  }
+  function loadBoard() {
+    try {
+      const raw = JSON.parse(localStorage.getItem(BOARD_KEY) || "{}");
+      if (!raw || typeof raw !== "object" || Array.isArray(raw)) return {};
+      const clean = {};
+      Object.entries(raw).forEach(([name, value]) => { if (typeof name === "string" && Number.isFinite(value) && value >= 0) clean[name.slice(0,16)] = Math.floor(value); });
+      return clean;
+    } catch { return {}; }
+  }
+  function persist() {
+    try {
+      localStorage.setItem(SAVE_KEY, JSON.stringify(save));
+      localStorage.setItem(BOARD_KEY, JSON.stringify(board));
+    } catch { statusEl.textContent = "Nie udało się zapisać gry. Sprawdź wolne miejsce w przeglądarce."; }
+    updateHud(); renderRanking();
+  }
+  function updateHud() {
+    scoreEl.textContent = String(score);
+    livesEl.textContent = "❤️".repeat(Math.max(0,lives)) + "🤍".repeat(Math.max(0,3-lives));
+    levelLabel.textContent = state === "playing" ? `${current+1}/${LEVELS.length}` : (state === "victory" ? "Gotowe!" : "Menu");
   }
   function renderRanking() {
-    rankingList.replaceChildren();
-    const results = Object.entries(board).sort((a,b) => b[1] - a[1]).slice(0,10);
-    if (!results.length) { const li = document.createElement("li"); li.textContent = "Jeszcze nie ma wyników. Zagraj jako pierwszy!"; rankingList.appendChild(li); return; }
-    results.forEach(([name, score]) => { const li = document.createElement("li"); li.textContent = `${name} — ${score} pkt`; rankingList.appendChild(li); });
+    rankingEl.replaceChildren();
+    const entries = Object.entries(board).sort((a,b) => b[1]-a[1] || a[0].localeCompare(b[0],"pl")).slice(0,5);
+    if (!entries.length) { const li = document.createElement("li"); li.textContent = "Zagraj i ustanów pierwszy rekord!"; rankingEl.appendChild(li); return; }
+    entries.forEach(([name, value]) => { const li = document.createElement("li"); li.textContent = `${name} — ${value} pkt`; rankingEl.appendChild(li); });
   }
-  function store() {
-    try { localStorage.setItem(SAVE_KEY, JSON.stringify(save)); localStorage.setItem(BOARD_KEY, JSON.stringify(board)); }
-    catch { message.textContent = "Nie udało się zapisać postępu. Sprawdź ustawienia przeglądarki."; }
-    scoreLabel.textContent = save.score; renderLevels(); renderRanking();
+  function saveScore() {
+    const name = save.name || "Niko";
+    board[name] = Math.max(board[name] || 0, score);
+    save.score = Math.max(save.score || 0, score);
+    persist();
   }
-  function safeName() { return nameInput.value.trim().slice(0,16) || "Niko"; }
-  function updateBoard() { const name = save.name || "Niko"; board[name] = Math.max(board[name] || 0, save.score); store(); }
-  function saveName() { save.name = safeName(); nameInput.value = save.name; store(); message.textContent = `Cześć, ${save.name}! Gotowy na przygodę?`; }
+  function setStatus(text) { statusEl.textContent = text; }
+  function clearButtons() { buttonsEl.replaceChildren(); }
+  function addButton(label, action, style = "") {
+    const button = document.createElement("button"); button.textContent = label;
+    if (style) button.className = style;
+    button.addEventListener("click", action); buttonsEl.appendChild(button); return button;
+  }
+  function showMenu() {
+    state = "menu"; screen.hidden = false; nameRow.hidden = false; picksEl.replaceChildren(); clearButtons();
+    titleEl.textContent = "NIKO POGROMCA"; textEl.textContent = "Szary Cień ukradł kolory! Skacz, zbieraj gwiazdki, ratuj świetliki i przywróć radość krainie.";
+    hintEl.textContent = "Sterowanie: ← → lub A/D, skok: ↑ / W / spacja. Na telefonie użyj przycisków pod grą.";
+    nameInput.value = save.name; addButton("Rozpocznij przygodę", startAdventure);
+    if (save.completed.length || save.score > 0) addButton("Kontynuuj", continueAdventure, "secondary");
+    addButton(soundOn ? "🔊 Dźwięk: włączony" : "🔇 Dźwięk: wyłączony", toggleSound, "quiet");
+    setStatus("Wybierz pseudonim i rozpocznij przygodę!"); updateHud();
+  }
+  function showPause() {
+    state = "paused"; screen.hidden = false; nameRow.hidden = true; picksEl.replaceChildren(); clearButtons();
+    titleEl.textContent = "Pauza"; textEl.textContent = "Niko odpoczywa chwilkę. Gdy będziesz gotowy, wracaj do przygody!";
+    hintEl.textContent = "Możesz wznowić grę albo wrócić do menu.";
+    addButton("Wznów grę", () => { state = "playing"; screen.hidden = true; lastTime = 0; });
+    addButton("Menu główne", showMenu, "secondary"); updateHud();
+  }
+  function showEnd(kind, heading, body) {
+    state = kind; screen.hidden = false; nameRow.hidden = true; picksEl.replaceChildren(); clearButtons();
+    titleEl.textContent = heading; textEl.textContent = body; hintEl.textContent = `Wynik tej przygody: ${score} punktów.`;
+    if (kind === "levelComplete" && current < LEVELS.length-1) addButton("Następny poziom", () => startLevel(current+1));
+    if (kind === "levelComplete" && current === LEVELS.length-1) addButton("Zobacz finał", finishAdventure);
+    if (kind === "gameover") addButton("Spróbuj jeszcze raz", restartRun);
+    if (kind === "victory" || kind === "gameover") addButton("Wróć do menu", showMenu, "secondary");
+    if (kind === "levelComplete") addButton("Menu główne", showMenu, "secondary");
+    updateHud();
+  }
+  function renderLevelPicks() {
+    picksEl.replaceChildren();
+    LEVELS.forEach((level, index) => {
+      const button = document.createElement("button");
+      button.className = "secondary"; button.textContent = `${index+1}. ${level.name}`;
+      button.disabled = index > save.unlocked;
+      button.addEventListener("click", () => { save.name = cleanName(nameInput.value); persist(); score = save.score || 0; lives = 3; startLevel(index); });
+      picksEl.appendChild(button);
+    });
+  }
+  function cleanName(value) {
+    const cleaned = String(value || "").replace(/[<>]/g, "").trim().slice(0,16);
+    return cleaned || "Niko";
+  }
+  function startAdventure() {
+    save.name = cleanName(nameInput.value); score = 0; lives = 3;
+    persist(); renderLevelPicks();
+    const firstUnfinished = LEVELS.findIndex((_, i) => !save.completed.includes(i));
+    startLevel(firstUnfinished === -1 ? 0 : Math.min(firstUnfinished, save.unlocked));
+  }
+  function continueAdventure() {
+    save.name = cleanName(nameInput.value || save.name); score = save.score || 0; lives = 3; persist();
+    const next = LEVELS.findIndex((_, i) => !save.completed.includes(i));
+    startLevel(next < 0 ? save.unlocked : Math.min(next, save.unlocked));
+  }
   function startLevel(index) {
-    if (index > save.unlocked) return;
-    currentLevel = index; const level = levels[index]; player.x = 50; player.y = 390; player.vx = 0; player.vy = 0; cameraX = 0; fireflyRescued = false;
-    stars = level.stars.map((point,i) => ({ x: point[0], y: point[1], id: `${index}-${i}`, taken: save.collected.includes(`${index}-${i}`) }));
-    playing = true; message.textContent = `Poziom ${index + 1}: ${level.name}. Powodzenia, ${save.name}!`;
+    current = Math.max(0, Math.min(LEVELS.length-1,index));
+    const data = LEVELS[current];
+    player = { x: 42, y: 420, w: 30, h: 42, vx: 0, vy: 0, grounded: false, facing: 1, invulnerable: 0, walk: 0 };
+    cameraX = 0; firefly = { x: data.firefly[0], y: data.firefly[1], rescued: save.rescued.includes(current) };
+    stars = data.stars.map((point,i) => ({ x: point[0], y: point[1], id: `${current}-${i}`, collected: save.collected.includes(`${current}-${i}`) }));
+    enemies = data.enemies.map(enemy => ({ ...enemy, direction: 1, alive: true, phase: Math.random()*6 }));
+    particles = []; state = "playing"; screen.hidden = true; nameRow.hidden = true; jumpQueued = false; lastTime = 0;
+    setStatus(`Poziom ${current+1}: ${data.name}. Powodzenia, ${save.name}!`); updateHud();
   }
-  document.querySelector("#saveName").addEventListener("click", saveName);
-  document.querySelector("#startButton").addEventListener("click", () => { saveName(); startLevel(save.unlocked); });
-  nameInput.value = save.name; scoreLabel.textContent = save.score; renderLevels(); renderRanking();
-  window.addEventListener("keydown", event => {
-    if (["ArrowLeft","ArrowRight","ArrowUp"," "].includes(event.key)) event.preventDefault();
-    if (event.key === "ArrowLeft" || event.key.toLowerCase() === "a") keys.left = true;
-    if (event.key === "ArrowRight" || event.key.toLowerCase() === "d") keys.right = true;
-    if (["ArrowUp"," ","w","W"].includes(event.key)) keys.jump = true;
-  });
-  window.addEventListener("keyup", event => {
-    if (event.key === "ArrowLeft" || event.key.toLowerCase() === "a") keys.left = false;
-    if (event.key === "ArrowRight" || event.key.toLowerCase() === "d") keys.right = false;
-    if (["ArrowUp"," ","w","W"].includes(event.key)) keys.jump = false;
-  });
-  document.querySelectorAll("[data-key]").forEach(button => {
-    const key = button.dataset.key;
-    button.addEventListener("pointerdown", event => { event.preventDefault(); keys[key] = true; button.setPointerCapture(event.pointerId); });
-    ["pointerup","pointercancel","lostpointercapture"].forEach(type => button.addEventListener(type, () => { keys[key] = false; }));
-  });
-  function collectThings() {
+  function restartRun() { score = 0; lives = 3; startLevel(current); }
+  function finishAdventure() {
+    saveScore(); showEnd("victory", "Udało się! 🌈", "Niko pokonał Szary Cień i przywrócił kolory całej krainie. Dzięki Tobie znów śpiewają rzeki, świecą świetliki i wszyscy mieszkańcy są bezpieczni!");
+  }
+  function toggleSound() {
+    soundOn = !soundOn;
+    if (state === "menu") showMenu();
+  }
+  function playTone(freq, duration = .12, type = "sine", volume = .045) {
+    if (!soundOn) return;
+    try {
+      const Audio = window.AudioContext || window.webkitAudioContext;
+      if (!Audio) return;
+      if (!audioContext) audioContext = new Audio();
+      if (audioContext.state === "suspended") audioContext.resume();
+      const osc = audioContext.createOscillator(), gain = audioContext.createGain();
+      osc.type = type; osc.frequency.setValueAtTime(freq, audioContext.currentTime);
+      gain.gain.setValueAtTime(volume, audioContext.currentTime);
+      gain.gain.exponentialRampToValueAtTime(.001, audioContext.currentTime + duration);
+      osc.connect(gain); gain.connect(audioContext.destination); osc.start(); osc.stop(audioContext.currentTime + duration);
+    } catch { /* Audio jest dodatkiem; gra działa bez niego. */ }
+  }
+  function soundCollect() { playTone(740,.08,"sine"); setTimeout(() => playTone(990,.1,"sine"),65); }
+  function addPoints(value) { score += value; updateHud(); }
+  function burst(x,y,color,count=9) {
+    for (let i=0;i<count;i++) particles.push({x,y,vx:(Math.random()-.5)*5,vy:(Math.random()-.8)*5,life:30+Math.random()*15,color,size:3+Math.random()*4});
+  }
+  function collectItems() {
     for (const star of stars) {
-      if (star.taken) continue;
-      if (Math.abs(player.x + player.w/2 - star.x) < 28 && Math.abs(player.y + player.h/2 - star.y) < 32) {
-        star.taken = true;
-        if (!save.collected.includes(star.id)) { save.collected.push(star.id); save.score += 10; store(); }
+      if (star.collected) continue;
+      if (Math.abs(player.x+player.w/2-star.x)<27 && Math.abs(player.y+player.h/2-star.y)<32) {
+        star.collected = true;
+        if (!save.collected.includes(star.id)) { save.collected.push(star.id); addPoints(10); persist(); soundCollect(); burst(star.x,star.y,"#ffe75c"); }
       }
     }
-    const firefly = levels[currentLevel].firefly;
-    if (!fireflyRescued && Math.abs(player.x + player.w/2 - firefly[0]) < 36 && Math.abs(player.y + player.h/2 - firefly[1]) < 42) {
-      fireflyRescued = true; save.score += 50; message.textContent = "Uratowany świetlik dziękuje! +50 punktów ✨"; store();
+    if (!firefly.rescued && Math.abs(player.x+player.w/2-firefly.x)<33 && Math.abs(player.y+player.h/2-firefly.y)<40) {
+      firefly.rescued = true;
+      if (!save.rescued.includes(current)) { save.rescued.push(current); addPoints(50); persist(); }
+      setStatus("Świetlik uratowany! +50 punktów ✨"); soundCollect(); burst(firefly.x,firefly.y,"#a8ff75",16);
     }
   }
-  function finishLevel() {
-    playing = false;
-    if (!save.completed.includes(currentLevel)) { save.completed.push(currentLevel); save.score += 100; }
-    save.unlocked = Math.max(save.unlocked, Math.min(currentLevel + 1, levels.length - 1)); store(); updateBoard();
-    message.textContent = currentLevel < levels.length - 1 ? `Poziom ukończony! +100 punktów. Odblokowano: ${levels[currentLevel + 1].name}!` : "Udało się! Kraina odzyskała kolory — jesteś Strażnikiem Kolorów! 🌈";
+  function damagePlayer() {
+    if (player.invulnerable > 0) return;
+    lives--; player.invulnerable = 1.5; player.vy = -7; player.vx = -player.facing*3;
+    burst(player.x+player.w/2,player.y+player.h/2,"#ff7584",12); playTone(180,.2,"triangle",.06); updateHud();
+    if (lives <= 0) {
+      saveScore(); showEnd("gameover", "Koniec wyprawy", "Niko potrzebuje odpoczynku. Spróbuj jeszcze raz — zebrane wcześniej gwiazdki i odblokowane poziomy zostaną zapisane!");
+    } else setStatus(`Ojej! Zostało żyć: ${lives}. Uważaj na stworki!`);
   }
-  function update() {
-    if (!playing) return;
-    const level = levels[currentLevel]; player.vx = (keys.right ? 4.2 : 0) - (keys.left ? 4.2 : 0);
-    if (keys.jump && player.grounded) { player.vy = -12; player.grounded = false; }
-    player.x = Math.max(0, Math.min(level.width-player.w, player.x+player.vx));
-    player.vy = Math.min(player.vy+0.55,14); player.y += player.vy; player.grounded = false;
+  function update(dt) {
+    if (state !== "playing") return;
+    const level = LEVELS[current];
+    const move = (keys.right ? 1 : 0) - (keys.left ? 1 : 0);
+    player.vx = move*230;
+    if (move) { player.facing = move; player.walk += dt*11; }
+    if (jumpQueued && player.grounded) { player.vy = -510; player.grounded = false; playTone(380,.09,"triangle",.025); }
+    jumpQueued = false;
+    const oldY = player.y;
+    player.x = Math.max(0,Math.min(level.width-player.w,player.x+player.vx*dt));
+    player.vy = Math.min(MAX_FALL*60, player.vy+GRAVITY*60*dt);
+    player.y += player.vy*dt; player.grounded = false;
     for (const [x,y,w] of level.platforms) {
       const overlapsX = player.x+player.w > x && player.x < x+w;
-      const wasAbove = player.y+player.h-player.vy <= y;
-      if (overlapsX && wasAbove && player.y+player.h >= y && player.vy >= 0) { player.y = y-player.h; player.vy = 0; player.grounded = true; }
+      const crossedTop = oldY+player.h <= y && player.y+player.h >= y;
+      if (overlapsX && crossedTop && player.vy >= 0) { player.y = y-player.h; player.vy = 0; player.grounded = true; }
     }
-    if (player.y > canvas.height+100) { player.x = 50; player.y = 390; player.vy = 0; }
-    collectThings(); cameraX = Math.max(0,Math.min(level.width-canvas.width,player.x-350));
-    if (player.x > level.goal) finishLevel();
+    for (const enemy of enemies) {
+      if (!enemy.alive) continue;
+      enemy.x += enemy.direction*enemy.speed*60*dt;
+      if (enemy.x < enemy.min || enemy.x+32 > enemy.max) enemy.direction *= -1;
+      const overlap = player.x < enemy.x+32 && player.x+player.w > enemy.x && player.y < enemy.y+30 && player.y+player.h > enemy.y;
+      if (overlap && player.invulnerable <= 0) {
+        if (player.vy > 80 && oldY+player.h <= enemy.y+13) {
+          enemy.alive = false; player.vy = -350; addPoints(25); soundCollect(); burst(enemy.x+16,enemy.y+14,"#a8ed73",14); setStatus("Sprytny skok! Stworek bezpiecznie odleciał. +25 pkt");
+        } else damagePlayer();
+      }
+    }
+    if (player.invulnerable > 0) player.invulnerable = Math.max(0,player.invulnerable-dt);
+    if (player.y > H+80 && state === "playing") {
+      lives--; player.x = 42; player.y = 420; player.vx = 0; player.vy = 0; player.invulnerable = 1.2; updateHud(); playTone(180,.2,"triangle",.06);
+      if (lives <= 0) { saveScore(); showEnd("gameover","Koniec wyprawy","Niko wpadł do przepaści i potrzebuje odpoczynku. Spróbuj jeszcze raz!"); }
+      else setStatus(`Ups, Niko spadł! Zostało żyć: ${lives}.`);
+    }
+    if (state !== "playing") return;
+    collectItems();
+    for (const p of particles) { p.x+=p.vx; p.y+=p.vy; p.vy+=.12; p.life--; }
+    particles = particles.filter(p => p.life > 0);
+    cameraX = Math.max(0,Math.min(level.width-W,player.x-W*.36));
+    if (player.x > level.goal) completeLevel();
   }
-  function draw() {
-    frame++; const level = levels[currentLevel] || levels[0];
-    const sky = ctx.createLinearGradient(0,0,0,canvas.height); sky.addColorStop(0,"#75d7ff"); sky.addColorStop(1,"#e1fbff"); ctx.fillStyle = sky; ctx.fillRect(0,0,canvas.width,canvas.height);
-    ctx.fillStyle = "#ffffffb8";
-    for (let i=0;i<7;i++) { const x=((i*190-cameraX*.25)%1150+1150)%1150-70, y=55+(i%3)*55; ctx.beginPath(); ctx.arc(x,y,24,0,Math.PI*2); ctx.arc(x+25,y-10,30,0,Math.PI*2); ctx.arc(x+53,y,23,0,Math.PI*2); ctx.fill(); }
+  function completeLevel() {
+    state = "levelComplete";
+    if (!save.completed.includes(current)) { save.completed.push(current); addPoints(100); }
+    save.unlocked = Math.max(save.unlocked,Math.min(current+1,LEVELS.length-1));
+    save.score = Math.max(save.score || 0,score); saveScore();
+    const last = current === LEVELS.length-1;
+    showEnd("levelComplete", last ? "Ostatni poziom ukończony!" : "Poziom ukończony! 🎉",
+      last ? "Niko dotarł do tęczy! Jeszcze chwila i cała kraina odzyska swoje kolory." : `Brawo, ${save.name}! +100 punktów. Przed Tobą kolejna przygoda: ${LEVELS[current+1].name}.`);
+    renderLevelPicks();
+  }
+  function roundRect(x,y,w,h,r) {
+    ctx.beginPath(); ctx.roundRect(x,y,w,h,r); ctx.fill();
+  }
+  function drawBackground(level) {
+    const gradient = ctx.createLinearGradient(0,0,0,H); gradient.addColorStop(0,level.sky[0]); gradient.addColorStop(1,level.sky[1]);
+    ctx.fillStyle=gradient; ctx.fillRect(0,0,W,H);
+    // Dalekie, przesuwające się wzgórza.
+    for (let i=0;i<6;i++) {
+      const x=((i*230-cameraX*.16)%1450+1450)%1450-200, y=385+(i%2)*30;
+      ctx.fillStyle=i%2 ? "#75c77f" : "#61b979"; ctx.beginPath(); ctx.ellipse(x,y+100,190,145,0,Math.PI,Math.PI*2); ctx.fill();
+    }
+    // Chmurki w parallaxie.
+    for (let i=0;i<7;i++) {
+      const x=((i*195-cameraX*.28)%1300+1300)%1300-100, y=62+(i%3)*49;
+      ctx.fillStyle="#ffffffb8"; ctx.beginPath(); ctx.arc(x,y,23,0,Math.PI*2); ctx.arc(x+25,y-10,30,0,Math.PI*2); ctx.arc(x+54,y,22,0,Math.PI*2); ctx.fill();
+    }
+  }
+  function drawPlatform(level) {
+    for (const [x,y,w,h] of level.platforms) {
+      ctx.fillStyle=level.ground; roundRect(x,y+8,w,h,7);
+      ctx.fillStyle=level.grass; roundRect(x,y,w,15,7);
+      ctx.fillRect(x,y+8,w,7);
+      ctx.fillStyle="#ffffff24"; ctx.fillRect(x+10,y+20,Math.max(0,w-20),3);
+      for (let px=x+12;px<x+w-8;px+=38) {
+        ctx.fillStyle=level.grass; ctx.beginPath(); ctx.moveTo(px,y+2); ctx.lineTo(px+5,y-6); ctx.lineTo(px+9,y+3); ctx.fill();
+      }
+    }
+  }
+  function drawStar(x,y,scale=1) {
+    ctx.save(); ctx.translate(x,y); ctx.rotate(animTime*1.6); ctx.scale(scale,scale);
+    ctx.beginPath(); for(let i=0;i<10;i++){ const r=i%2===0?13:6.5, a=-Math.PI/2+i*Math.PI/5; const px=Math.cos(a)*r,py=Math.sin(a)*r; if(i===0)ctx.moveTo(px,py);else ctx.lineTo(px,py); }
+    ctx.closePath(); ctx.fillStyle="#ffe35e"; ctx.fill(); ctx.strokeStyle="#d79324"; ctx.lineWidth=2; ctx.stroke(); ctx.restore();
+  }
+  function drawFirefly() {
+    if (firefly.rescued) return;
+    const bob=Math.sin(animTime*4)*5;
+    ctx.save(); ctx.translate(firefly.x,firefly.y+bob);
+    ctx.globalAlpha=.22; ctx.fillStyle="#c9ff69"; ctx.beginPath(); ctx.arc(0,0,24,0,Math.PI*2); ctx.fill(); ctx.globalAlpha=1;
+    ctx.fillStyle="#b9ff56"; ctx.beginPath(); ctx.ellipse(-5,-6,6,9,-.6,0,Math.PI*2); ctx.ellipse(5,-6,6,9,.6,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle="#ffef8a"; ctx.beginPath(); ctx.arc(0,1,7,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle="#243b4b"; ctx.beginPath(); ctx.arc(-2,-1,1.3,0,Math.PI*2); ctx.arc(3,-1,1.3,0,Math.PI*2); ctx.fill(); ctx.restore();
+  }
+  function drawEnemy(enemy) {
+    if (!enemy.alive) return;
+    const bob=Math.sin(animTime*7+enemy.phase)*2;
+    ctx.save(); ctx.translate(enemy.x+16,enemy.y+bob);
+    ctx.fillStyle="#24354d"; ctx.beginPath(); ctx.ellipse(0,18,18,6,0,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle="#8cc85a"; ctx.beginPath(); ctx.ellipse(0,0,16,14,0,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle="#6ca640"; ctx.beginPath(); ctx.arc(-9,-9,5,0,Math.PI*2); ctx.arc(9,-9,5,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle="#fff"; ctx.beginPath(); ctx.arc(-5,-2,4,0,Math.PI*2); ctx.arc(6,-2,4,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle="#23334a"; ctx.beginPath(); ctx.arc(-4,-2,1.7,0,Math.PI*2); ctx.arc(7,-2,1.7,0,Math.PI*2); ctx.fill();
+    ctx.strokeStyle="#34452b"; ctx.lineWidth=2; ctx.beginPath(); ctx.arc(1,4,5,.15,Math.PI-.15); ctx.stroke(); ctx.restore();
+  }
+  function drawPlayer() {
+    if (!player) return;
+    if (player.invulnerable>0 && Math.floor(animTime*14)%2===0) return;
+    const running=Math.abs(player.vx)>1, bob=player.grounded && running ? Math.sin(player.walk)*2 : 0;
+    const x=player.x+player.w/2, y=player.y+bob;
+    ctx.save(); ctx.translate(x,y); if(player.facing<0)ctx.scale(-1,1);
+    // Cień, buty, plecak, ciało i głowa — proste, własne rysunki bez zewnętrznych zasobów.
+    ctx.fillStyle="#18344a55"; ctx.beginPath(); ctx.ellipse(0,player.h+2,18,5,0,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle="#db504d"; roundRect(-13,25,26,15,7);
+    ctx.fillStyle="#f3bb64"; roundRect(-16,36,13,6,3); roundRect(3,36,13,6,3);
+    ctx.fillStyle="#ffcb43"; roundRect(-17,21,9,16,4);
+    ctx.fillStyle="#367fd1"; roundRect(-12,20,24,18,5);
+    ctx.fillStyle="#f3b77b"; ctx.beginPath(); ctx.arc(0,13,12,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle="#593723"; ctx.beginPath(); ctx.arc(0,8,12,Math.PI,Math.PI*2); ctx.lineTo(12,11); ctx.quadraticCurveTo(3,5,-12,12); ctx.fill();
+    ctx.fillStyle="#fff"; ctx.beginPath(); ctx.arc(4,14,3.2,0,Math.PI*2); ctx.fill();
+    ctx.fillStyle="#25364b"; ctx.beginPath(); ctx.arc(5,14,1.5,0,Math.PI*2); ctx.fill();
+    ctx.strokeStyle="#9a4b39"; ctx.lineWidth=1.5; ctx.beginPath(); ctx.arc(5,18,3,.2,Math.PI-.2); ctx.stroke();
+    ctx.restore();
+  }
+  function drawWorld() {
+    const level=LEVELS[current] || LEVELS[0]; drawBackground(level);
     ctx.save(); ctx.translate(-cameraX,0);
-    level.platforms.forEach(([x,y,w,h]) => { ctx.fillStyle="#8b5a35"; ctx.fillRect(x,y,w,h); ctx.fillStyle="#42bd67"; ctx.fillRect(x,y,w,12); ctx.fillStyle="#319b4e"; ctx.fillRect(x,y+10,w,4); });
-    stars.forEach(star => { if (!star.taken) { ctx.font="28px sans-serif"; ctx.textAlign="center"; ctx.fillText("⭐",star.x,star.y+10+Math.sin(frame/10+star.x)*4); } });
-    const f=level.firefly; if (!fireflyRescued) { ctx.font="32px sans-serif"; ctx.textAlign="center"; ctx.fillText("🧚",f[0],f[1]+Math.sin(frame/8)*5); }
-    ctx.font="62px sans-serif"; ctx.textAlign="center"; ctx.fillText("🌈",level.goal,455);
-    ctx.font="38px sans-serif"; ctx.fillText("🧒",player.x+player.w/2,player.y+player.h); ctx.restore();
-    ctx.fillStyle="#17324d"; ctx.font="bold 18px system-ui"; ctx.textAlign="left"; ctx.fillText(`${levels[currentLevel].name} • Poziom ${currentLevel+1}/${levels.length}`,18,30);
-    update(); requestAnimationFrame(draw);
+    drawPlatform(level);
+    stars.forEach(star=>{if(!star.collected)drawStar(star.x,star.y+Math.sin(animTime*3+star.x)*3);});
+    drawFirefly(); enemies.forEach(drawEnemy);
+    // Brama tęczy i delikatny blask.
+    ctx.save(); ctx.translate(level.goal,441); ctx.shadowColor="#fff28a"; ctx.shadowBlur=22;
+    for(let i=0;i<4;i++){ctx.strokeStyle=["#ff625e","#ffbd42","#ffe96b","#64d98a"][i];ctx.lineWidth=9;ctx.beginPath();ctx.arc(0,0,38-i*7,Math.PI,Math.PI*2);ctx.stroke();}
+    ctx.shadowBlur=0; ctx.fillStyle="#fff8c6"; ctx.beginPath(); ctx.ellipse(0,0,15,8,0,0,Math.PI*2); ctx.fill(); ctx.restore();
+    particles.forEach(p=>{ctx.globalAlpha=Math.max(0,p.life/45);ctx.fillStyle=p.color;ctx.beginPath();ctx.arc(p.x,p.y,p.size,0,Math.PI*2);ctx.fill();}); ctx.globalAlpha=1;
+    drawPlayer(); ctx.restore();
+    // Czytelny pasek poziomu w canvasie.
+    ctx.fillStyle="#12334dbb"; ctx.beginPath(); ctx.roundRect(15,14,250,38,12); ctx.fill();
+    ctx.fillStyle="#fff"; ctx.font="bold 16px system-ui"; ctx.textAlign="left"; ctx.fillText(`${level.name}  •  ${current+1}/${LEVELS.length}`,27,39);
   }
-  draw();
+  function frame(now) {
+    if (!lastTime) lastTime=now;
+    const dt=Math.min((now-lastTime)/1000,.033); lastTime=now; animTime+=dt;
+    if (state === "playing") update(dt);
+    drawWorld(); requestAnimationFrame(frame);
+  }
+  window.addEventListener("keydown", event => {
+    const key=event.key.toLowerCase();
+    if (["arrowleft","arrowright","arrowup"," "].includes(key)) event.preventDefault();
+    if (key==="arrowleft" || key==="a") keys.left=true;
+    if (key==="arrowright" || key==="d") keys.right=true;
+    if ((key==="arrowup" || key==="w" || key===" ") && !keys.jump) { keys.jump=true; jumpQueued=true; }
+    if ((key==="escape" || key==="p") && state==="playing") showPause();
+    if ((key==="escape" || key==="p") && state==="paused") { state="playing"; screen.hidden=true; lastTime=0; }
+  });
+  window.addEventListener("keyup", event => {
+    const key=event.key.toLowerCase();
+    if (key==="arrowleft" || key==="a") keys.left=false;
+    if (key==="arrowright" || key==="d") keys.right=false;
+    if (key==="arrowup" || key==="w" || key===" ") keys.jump=false;
+  });
+  window.addEventListener("blur", () => { keys.left=false; keys.right=false; keys.jump=false; if(state==="playing")showPause(); });
+  document.querySelectorAll("[data-key]").forEach(button => {
+    const key=button.dataset.key;
+    button.addEventListener("pointerdown", event => { event.preventDefault(); button.setPointerCapture(event.pointerId); if(key==="jump" && !keys.jump)jumpQueued=true; keys[key]=true; button.classList.add("pressed"); });
+    const release=()=>{keys[key]=false;button.classList.remove("pressed");};
+    ["pointerup","pointercancel","lostpointercapture"].forEach(type=>button.addEventListener(type,release));
+  });
+  nameInput.addEventListener("keydown", event => { if(event.key==="Enter")startAdventure(); });
+  nameInput.value=save.name;
+  renderRanking(); updateHud(); showMenu();
+  requestAnimationFrame(frame);
 })();
 </script>
 </body>
