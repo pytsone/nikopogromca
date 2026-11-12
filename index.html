@@ -1,1 +1,455 @@
-<!DOCTYPE html>\n<html lang=\"pl\">\n<head>\n<meta charset=\"UTF-8\">\n<meta name=\"viewport\" content=\"width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover\">\n<meta name=\"theme-color\" content=\"#102b4e\">\n<title>NIKO POGROMCA — Strażnik Kolorów</title>\n<style>\n:root{font-family:system-ui,-apple-system,\"Segoe UI\",sans-serif;color:#f3fbff;background:#0c1e35}*{box-sizing:border-box}body{margin:0;min-height:100vh;padding:12px;background:radial-gradient(ellipse at top,#2b6687,#102640 55%,#091426)}button,input{font:inherit}button{min-height:46px;padding:9px 14px;border:2px solid #f1c84d;border-radius:12px;background:linear-gradient(#ffe985,#ffc83f);color:#382a08;font-weight:800;cursor:pointer;box-shadow:0 4px #a9781d}button:disabled{opacity:.5;cursor:not-allowed}button.secondary{background:linear-gradient(#e4f6ff,#b9e2f5);border-color:#9bd3e9;box-shadow:0 4px #4e829d;color:#16344b}.shell{width:min(1120px,100%);margin:auto}.topbar{display:flex;justify-content:space-between;align-items:center;gap:12px;flex-wrap:wrap;margin-bottom:12px}.brand{display:flex;align-items:center;gap:10px}.mark{width:48px;height:48px;display:grid;place-items:center;border:2px solid #79d4ec;border-radius:15px;background:#17456a;font-size:27px}h1{margin:0;color:#fff1a8;font-size:clamp(1.35rem,3.5vw,2.1rem)}.tagline{margin:3px 0 0;color:#c4e9f8;font-size:.85rem}.hud{display:flex;flex-wrap:wrap;gap:6px}.badge{min-height:38px;display:inline-flex;align-items:center;gap:5px;padding:5px 9px;border:1px solid #5486a5;border-radius:11px;background:#163958;font-weight:800;white-space:nowrap}.game-panel{overflow:hidden;border:2px solid #548eaa;border-radius:18px;background:#0b1c31}.stage{position:relative;overflow:hidden;background:#73d5f4}#game{display:block;width:100%;aspect-ratio:16/9;background:#73d5f4;touch-action:none}.screen{position:absolute;inset:0;display:flex;align-items:center;justify-content:center;overflow:auto;padding:12px;background:#091a2bc9}.screen[hidden]{display:none}.card{width:min(670px,100%);max-height:100%;overflow:auto;padding:clamp(12px,3vw,24px);text-align:center;border:2px solid #78cce4;border-radius:20px;background:linear-gradient(150deg,#17466a,#102b49)}.hero{font-size:clamp(2rem,7vw,3.8rem)}.card h2{margin:0 0 8px;color:#ffe985;font-size:clamp(1.5rem,5vw,2.6rem)}.card p{color:#d7f2ff;line-height:1.4;margin:8px 0 12px}.row,.buttons,.level-picks{display:flex;flex-wrap:wrap;justify-content:center;gap:8px;margin:10px 0}.level-picks{max-height:90px;overflow:auto}.level-picks button{font-size:.8rem;padding:6px 9px}input{width:min(250px,100%);min-height:44px;padding:8px 11px;border:2px solid #99d9eb;border-radius:11px;background:#f6fcff;color:#17324d}.muted{color:#b7d9e9!important;font-size:.83rem}.help{display:flex;justify-content:space-between;flex-wrap:wrap;gap:7px;padding:10px 14px;color:#c8e8f4;font-size:.85rem}.help strong{color:#fff1a8}.under{display:grid;grid-template-columns:1fr auto;align-items:center;gap:10px;padding-top:10px}#status{min-height:1.5em;margin:0;font-weight:700}.touch{display:flex;justify-content:center;gap:9px}.touch button{min-width:70px;min-height:54px;padding:6px;font-size:1.2rem;touch-action:none;user-select:none;-webkit-user-select:none}.touch button.pressed{transform:translateY(2px);filter:brightness(.9)}.rank{margin-top:12px;padding:12px 16px;border:1px solid #3c6b8a;border-radius:15px;background:#112d49}.rank-head{display:flex;justify-content:space-between;flex-wrap:wrap;gap:8px}.rank h2{margin:0;color:#ffe985;font-size:1rem}.rank ol{display:flex;flex-wrap:wrap;gap:5px 25px;padding-left:22px}.sr-only{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0);white-space:nowrap}@media(max-width:620px){body{padding:7px}.mark{width:40px;height:40px;font-size:22px}.tagline{font-size:.74rem}.badge{min-height:34px;padding:4px 7px;font-size:.8rem}.under{grid-template-columns:1fr}#status{text-align:center}.help{justify-content:center;text-align:center;font-size:.76rem;padding:8px}.touch button{min-width:76px;min-height:56px}.rank ol{display:block}}\n</style>\n</head>\n<body>\n<main class=\"shell\">\n<header class=\"topbar\"><div class=\"brand\"><div class=\"mark\" aria-hidden=\"true\">🌈</div><div><h1>NIKO POGROMCA</h1><p class=\"tagline\">Każdy długi etap kończy się pojedynkiem z bossem!</p></div></div><div class=\"hud\"><span class=\"badge\">⭐ <span id=\"score\">0</span></span><span class=\"badge\" id=\"lives\">❤️❤️❤️</span><span class=\"badge\">🌟 <span id=\"star-count\">0/20</span></span><span class=\"badge\">🛹 <span id=\"skate-status\">🔒</span></span><span class=\"badge\">🌍 <span id=\"level-label\">Menu</span></span></div></header>\n<section class=\"game-panel\" aria-label=\"Gra Niko Pogromca\"><div class=\"stage\"><canvas id=\"game\" width=\"960\" height=\"540\" aria-label=\"Platformówka. Skacz, zbieraj gwiazdki, pokonuj stworki i na końcu każdego etapu bossa.\"></canvas><div class=\"screen\" id=\"screen\" aria-live=\"polite\"><div class=\"card\"><div class=\"hero\" aria-hidden=\"true\">🧒 ⭐ 🛹</div><h2 id=\"screen-title\">NIKO POGROMCA</h2><p id=\"screen-text\">Przemierz długie krainy, zbieraj gwiazdki i uratuj świat. Zbierz 20 gwiazdek, by odblokować ukochaną deskorolkę Niko. Każdy etap kończy się walką z bossem!</p><div class=\"row\" id=\"name-row\"><label class=\"sr-only\" for=\"player-name\">Pseudonim gracza</label><input id=\"player-name\" maxlength=\"16\" placeholder=\"Wpisz swój pseudonim\" autocomplete=\"off\"></div><div class=\"level-picks\" id=\"level-picks\" aria-label=\"Wybierz poziom\"></div><div class=\"buttons\" id=\"screen-buttons\"></div><p class=\"muted\" id=\"screen-hint\">Laptop: ← → / A D, skok: ↑ / W / spacja. Telefon: użyj przycisków pod grą. Skocz na bossa trzy razy, by go pokonać.</p></div></div></div><div class=\"help\"><span><strong>Ruch:</strong> ← → / A D</span><span><strong>Skok:</strong> ↑ / W / spacja</span><span><strong>Boss:</strong> skocz na niego 3 razy</span><span><strong>Pauza:</strong> Esc / P</span></div></section>\n<div class=\"under\"><p id=\"status\" aria-live=\"polite\">Wpisz pseudonim i rozpocznij przygodę!</p><div class=\"touch\" aria-label=\"Sterowanie dotykowe\"><button type=\"button\" data-key=\"left\" aria-label=\"W lewo\">◀</button><button type=\"button\" data-key=\"jump\" aria-label=\"Skok\">⤒</button><button type=\"button\" data-key=\"right\" aria-label=\"W prawo\">▶</button></div></div>\n<section class=\"rank\" aria-label=\"Lokalny ranking\"><div class=\"rank-head\"><h2>🏆 Najlepszy wynik</h2><span class=\"muted\">Zapisany na tym urządzeniu</span></div><ol id=\"ranking\"></ol></section>\n</main>\n<script>\n(()=>{'use strict';\nconst SAVE_KEY='niko-pogromca-save-v1',BOARD_KEY='niko-pogromca-ranking-v1',W=960,H=540,SKATE_AT=20;\nconst THEMES=[\n{name:'Zaczarowany Las',sky:['#6dd7ff','#e9fff4'],ground:'#75482e',grass:'#49b653',pattern:[480,430,370,420,360,430,380,440,370,420,360,430,380,450]},\n{name:'Wyspy Bąbelków',sky:['#58b8ea','#ebfbff'],ground:'#83603d',grass:'#53c5a0',pattern:[480,420,350,410,340,400,350,420,360,410,340,400,360,450]},\n{name:'Góry Chmur',sky:['#799dea','#f9f0ff'],ground:'#66517f',grass:'#9cdb8c',pattern:[480,410,340,400,330,390,350,410,340,400,330,390,350,450]},\n{name:'Jaskinie Kryształów',sky:['#4e8acb','#d9e8ff'],ground:'#594477',grass:'#7bd5ca',pattern:[480,420,350,410,340,400,360,420,350,410,340,400,360,450]},\n{name:'Ocean Śpiewających Muszli',sky:['#4ec9e6','#dffaff'],ground:'#396987',grass:'#62d8bd',pattern:[480,410,340,410,340,400,350,420,350,410,340,400,360,450]},\n{name:'Twierdza Szarego Cienia',sky:['#8079b9','#eedfff'],ground:'#514866',grass:'#bc9ce8',pattern:[480,410,340,410,340,400,350,410,340,400,350,410,340,450]}\n];\nconst OLD_STARS=[[[170,435],[455,385],[695,335],[950,385],[1190,325],[1460,415]],[[390,375],[610,305],[830,365],[1060,285],[1290,345],[1580,415]],[[405,365],[630,295],[860,355],[1090,275],[1320,335],[1550,265]],[[415,375],[640,305],[870,365],[1100,285],[1330,355],[1580,415]],[[415,365],[650,295],[890,365],[1130,285],[1370,355],[1630,415]],[[415,365],[650,295],[890,365],[1130,285],[1370,355],[1610,275]]];\nfunction makeLevel(theme,index){const platforms=[[0,theme.pattern[0],330,H-theme.pattern[0]]];for(let i=1;i<theme.pattern.length;i++)platforms.push([360+(i-1)*240,theme.pattern[i],188,28]);const last=platforms[platforms.length-1],arenaX=last[0]+last[2]-20;platforms.push([arenaX,460,470,80]);const goal=arenaX+390;const stars=OLD_STARS[index].map(p=>p.slice());for(let i=1;i<platforms.length-1;i++){const p=platforms[i];[[p[0]+55,p[1]-43],[p[0]+135,p[1]-78]].forEach((q,n)=>{if((i+n)%2===0&&!stars.some(s=>Math.abs(s[0]-q[0])<45&&Math.abs(s[1]-q[1])<35))stars.push(q);});}const enemies=[];for(let i=2;i<platforms.length-1;i+=3){const p=platforms[i];enemies.push({x:p[0]+65,y:p[1]-29,min:p[0]+15,max:p[0]+p[2]-10,speed:.9+(index%3)*.1});}return {...theme,width:goal+100,goal,arenaX,platforms,stars,enemies,firefly:[platforms[5][0]+90,platforms[5][1]-50],boss:{x:arenaX+205,y:410,min:arenaX+95,max:arenaX+370,hp:3,name:['Leśny Strażnik','Król Bąbelków','Władca Chmur','Kryształowy Golem','Krab Muszelka','Szary Cień'][index]}};}\nconst LEVELS=THEMES.map(makeLevel);\nconst $=id=>document.getElementById(id),canvas=$('game'),ctx=canvas.getContext('2d'),screen=$('screen'),titleEl=$('screen-title'),textEl=$('screen-text'),hintEl=$('screen-hint'),buttonsEl=$('screen-buttons'),picksEl=$('level-picks'),nameRow=$('name-row'),nameInput=$('player-name'),statusEl=$('status'),scoreEl=$('score'),livesEl=$('lives'),starCountEl=$('star-count'),skateEl=$('skate-status'),levelEl=$('level-label'),rankingEl=$('ranking'),keys={left:false,right:false,jump:false};\nfunction fresh(){return{name:'',score:0,unlocked:0,completed:[],collected:[],rescued:[],bosses:[],skateboard:false};}\nfunction readSave(){try{const v=JSON.parse(localStorage.getItem(SAVE_KEY)||'null');if(!v||typeof v!=='object')return fresh();const s={name:typeof v.name==='string'?v.name.slice(0,16):'',score:Number.isFinite(v.score)?Math.max(0,Math.floor(v.score)):0,unlocked:Number.isInteger(v.unlocked)?Math.max(0,Math.min(LEVELS.length-1,v.unlocked)):0,completed:Array.isArray(v.completed)?v.completed.filter(n=>Number.isInteger(n)&&n>=0&&n<LEVELS.length):[],collected:Array.isArray(v.collected)?v.collected.filter(x=>typeof x==='string'):[],rescued:Array.isArray(v.rescued)?v.rescued.filter(n=>Number.isInteger(n)&&n>=0&&n<LEVELS.length):[],bosses:Array.isArray(v.bosses)?v.bosses.filter(n=>Number.isInteger(n)&&n>=0&&n<LEVELS.length):[],skateboard:v.skateboard===true};s.skateboard=s.skateboard||s.collected.length>=SKATE_AT;return s;}catch{return fresh();}}\nfunction readBoard(){try{const v=JSON.parse(localStorage.getItem(BOARD_KEY)||'{}');if(!v||typeof v!=='object'||Array.isArray(v))return{};const r={};Object.keys(v).forEach(n=>{if(Number.isFinite(v[n])&&v[n]>=0)r[n.slice(0,16)]=Math.floor(v[n]);});return r;}catch{return{};}}\nlet save=readSave(),board=readBoard(),state='menu',levelIndex=0,score=save.score||0,lives=3,camera=0,last=0,animTime=0,player=null,stars=[],enemies=[],boss=null,firefly=null,particles=[],jumpQueued=false,audio=null,sound=true;\nfunction setStatus(s){statusEl.textContent=s;}\nfunction hud(){scoreEl.textContent=score;livesEl.textContent='❤️'.repeat(Math.max(0,lives))+'🤍'.repeat(Math.max(0,3-lives));starCountEl.textContent=Math.min(save.collected.length,SKATE_AT)+'/'+SKATE_AT;skateEl.textContent=save.skateboard?'✅':'🔒';levelEl.textContent=state==='playing'?(levelIndex+1)+'/'+LEVELS.length:state==='victory'?'Finał!':'Menu';}\nfunction renderRank(){rankingEl.replaceChildren();const rows=Object.entries(board).sort((a,b)=>b[1]-a[1]||a[0].localeCompare(b[0],'pl')).slice(0,5);if(!rows.length){const li=document.createElement('li');li.textContent='Zagraj i ustanów pierwszy rekord!';rankingEl.appendChild(li);return;}rows.forEach(([n,p])=>{const li=document.createElement('li');li.textContent=n+' — '+p+' pkt';rankingEl.appendChild(li);});}\nfunction persist(){try{localStorage.setItem(SAVE_KEY,JSON.stringify(save));localStorage.setItem(BOARD_KEY,JSON.stringify(board));}catch{setStatus('Nie udało się zapisać postępu w przeglądarce.');}hud();renderRank();}\nfunction saveScore(){const n=save.name||'Niko';board[n]=Math.max(board[n]||0,score);save.score=Math.max(save.score||0,score);persist();}\nfunction addButton(label,fn,cls){const b=document.createElement('button');b.type='button';b.textContent=label;if(cls)b.className=cls;b.addEventListener('click',fn);buttonsEl.appendChild(b);}\nfunction clearButtons(){buttonsEl.replaceChildren();}\nfunction cleanName(s){return String(s||'').replace(/[<>]/g,'').trim().slice(0,16)||'Niko';}\nfunction panel(title,text,hint,showName){titleEl.textContent=title;textEl.textContent=text;hintEl.textContent=hint;nameRow.style.display=showName?'flex':'none';screen.hidden=false;}\nfunction renderPicks(){picksEl.replaceChildren();LEVELS.forEach((l,i)=>{const b=document.createElement('button');b.type='button';b.className='secondary';b.textContent=(i+1)+'. '+l.name;b.disabled=i>save.unlocked;b.addEventListener('click',()=>{save.name=cleanName(nameInput.value||save.name);startLevel(i);});picksEl.appendChild(b);});}\nfunction showMenu(){state='menu';clearButtons();panel('NIKO POGROMCA','Przemierz długie krainy, zbieraj gwiazdki i uratuj świat. Po 20 gwiazdkach Niko dostanie ukochaną deskorolkę. Każdy etap kończy się walką z bossem!','Laptop: ← → / A D, skok: ↑ / W / spacja. Telefon: przyciski pod grą. Skocz na bossa trzy razy, by wygrać.',true);nameInput.value=save.name;renderPicks();addButton('Rozpocznij przygodę',startAdventure);if(save.score||save.completed.length)addButton('Kontynuuj',continueGame,'secondary');addButton(sound?'🔊 Dźwięk: włączony':'🔇 Dźwięk: wyłączony',()=>{sound=!sound;showMenu();},'secondary');setStatus('Wpisz pseudonim i rozpocznij przygodę!');hud();}\nfunction showPause(){if(state!=='playing')return;state='paused';clearButtons();panel('Pauza','Niko odpoczywa. Gotowy do dalszej jazdy?','Wznów grę albo wróć do menu.',false);addButton('Wznów grę',()=>{state='playing';screen.hidden=true;last=0;});addButton('Menu główne',showMenu,'secondary');hud();}\nfunction showEnd(kind,title,text){state=kind;clearButtons();panel(title,text,'Wynik tej przygody: '+score+' punktów.',false);if(kind==='levelComplete'&&levelIndex<LEVELS.length-1)addButton('Następny etap',()=>startLevel(levelIndex+1));if(kind==='levelComplete'&&levelIndex===LEVELS.length-1)addButton('Zobacz finał',finishAdventure);if(kind==='levelComplete'||kind==='gameover'||kind==='victory')addButton(kind==='gameover'?'Spróbuj jeszcze raz':'Menu główne',kind==='gameover'?restartLevel:showMenu,'secondary');hud();}\nfunction startAdventure(){save.name=cleanName(nameInput.value||save.name);score=0;lives=3;const i=LEVELS.findIndex((_,n)=>!save.completed.includes(n));startLevel(i<0?0:Math.min(i,save.unlocked));}\nfunction continueGame(){save.name=cleanName(nameInput.value||save.name);score=save.score||0;lives=3;const i=LEVELS.findIndex((_,n)=>!save.completed.includes(n));startLevel(i<0?save.unlocked:Math.min(i,save.unlocked));}\nfunction startLevel(i){levelIndex=Math.max(0,Math.min(LEVELS.length-1,i));const l=LEVELS[levelIndex];player={x:42,y:l.pattern[0]-42,w:30,h:42,vx:0,vy:0,grounded:true,facing:1,safe:0,walk:0,checkpointX:42,checkpointY:l.pattern[0]-42};stars=l.stars.map((p,n)=>({x:p[0],y:p[1],id:levelIndex+'-'+n,taken:save.collected.includes(levelIndex+'-'+n)}));enemies=l.enemies.map(e=>({...e,direction:1,alive:true,phase:Math.random()*6,width:30,height:28}));firefly={x:l.firefly[0],y:l.firefly[1],rescued:save.rescued.includes(levelIndex)};const beaten=save.bosses.includes(levelIndex);boss={...l.boss,maxHp:l.boss.hp,hp:beaten?0:l.boss.hp,direction:-1,active:false,flash:0,defeated:beaten};particles=[];camera=0;jumpQueued=false;state='playing';screen.hidden=true;last=0;setStatus('Poziom '+(levelIndex+1)+': '+l.name+'. Na końcu czeka '+boss.name+'!');hud();}\nfunction restartLevel(){lives=3;startLevel(levelIndex);}\nfunction finishAdventure(){saveScore();showEnd('victory','Kraina odzyskała kolory! 🌈','Niko pokonał Szarego Cienia. Wszyscy mieszkańcy są bezpieczni!');}\nfunction tone(freq,duration,type='sine',volume=.04){if(!sound)return;try{const C=window.AudioContext||window.webkitAudioContext;if(!C)return;if(!audio)audio=new C();if(audio.state==='suspended')audio.resume();const o=audio.createOscillator(),g=audio.createGain();o.type=type;o.frequency.value=freq;g.gain.value=volume;g.gain.exponentialRampToValueAtTime(.0001,audio.currentTime+duration);o.connect(g);g.connect(audio.destination);o.start();o.stop(audio.currentTime+duration);}catch{}}\nfunction pickupSound(){tone(740,.08);setTimeout(()=>tone(980,.1),60);}\nfunction points(n){score+=n;hud();}\nfunction burst(x,y,color,n=12){for(let i=0;i<n;i++)particles.push({x,y,vx:(Math.random()-.5)*5,vy:-2-Math.random()*3,life:35,size:3+Math.random()*4,color});}\nfunction collect(){stars.forEach(s=>{if(s.taken||Math.abs(player.x+15-s.x)>27||Math.abs(player.y+21-s.y)>31)return;s.taken=true;if(save.collected.includes(s.id))return;save.collected.push(s.id);points(10);pickupSound();burst(s.x,s.y,'#ffe45e');if(!save.skateboard&&save.collected.length>=SKATE_AT){save.skateboard=true;setStatus('20 gwiazdek! Niko dostał swoją deskorolkę! 🛹');tone(880,.2);}else setStatus('Gwiazdka zebrana! '+Math.min(save.collected.length,SKATE_AT)+'/'+SKATE_AT+' do deskorolki.');persist();});if(firefly&&!firefly.rescued&&Math.abs(player.x+15-firefly.x)<31&&Math.abs(player.y+21-firefly.y)<34){firefly.rescued=true;if(!save.rescued.includes(levelIndex)){save.rescued.push(levelIndex);points(50);persist();}setStatus('Świetlik uratowany! +50 punktów ✨');pickupSound();burst(firefly.x,firefly.y,'#baff69',16);}}\nfunction hurt(){if(player.safe>0||state!=='playing')return;lives--;player.safe=1.6;player.vy=-90;player.vx=-player.facing*55;tone(180,.18,'triangle',.05);burst(player.x+15,player.y+20,'#ff7788');hud();if(lives<=0){saveScore();showEnd('gameover','Koniec wyprawy','Niko stracił wszystkie serduszka. Spróbuj jeszcze raz!');}else setStatus('Stracono serduszko — zostało '+lives+'. Poziom trwa dalej!');}\nfunction fall(){lives--;player.x=player.checkpointX;player.y=player.checkpointY;player.vx=player.vy=0;player.safe=1.6;player.grounded=true;hud();if(lives<=0){saveScore();showEnd('gameover','Koniec wyprawy','Niko stracił wszystkie serduszka. Spróbuj jeszcze raz!');}else setStatus('Niko wrócił na bezpieczny podest. Zostało serduszek: '+lives+'.');}\nfunction hitBoss(){if(!boss||boss.defeated)return;boss.hp--;boss.flash=.5;player.vy=-340;player.safe=.65;tone(520,.12,'square',.035);burst(boss.x+25,boss.y+15,'#ffd85c',16);if(boss.hp<=0){boss.defeated=true;if(!save.bosses.includes(levelIndex)){save.bosses.push(levelIndex);points(250);persist();}setStatus(boss.name+' pokonany! Brama otwarta. +250 pkt 🏆');pickupSound();}else setStatus(boss.name+': jeszcze '+boss.hp+' trafienia!');}\nfunction complete(){if(state!=='playing')return;state='levelComplete';if(!save.completed.includes(levelIndex)){save.completed.push(levelIndex);points(100);}save.unlocked=Math.max(save.unlocked,Math.min(levelIndex+1,LEVELS.length-1));board[save.name||'Niko']=Math.max(board[save.name||'Niko']||0,score);save.score=Math.max(save.score||0,score);persist();const lastLevel=levelIndex===LEVELS.length-1;showEnd('levelComplete',lastLevel?'Ostatni etap ukończony! 🎉':'Etap ukończony! 🎉',lastLevel?'Niko pokonał bossa i przywrócił kolory krainie!':'Boss pokonany! +100 punktów. Następna przygoda: '+LEVELS[levelIndex+1].name+'.');}\nfunction update(dt){if(state!=='playing'||!player)return;const l=LEVELS[levelIndex],dir=(keys.right?1:0)-(keys.left?1:0);player.vx=dir*(save.skateboard?315:250);if(dir){player.facing=dir;player.walk+=dt*(save.skateboard?16:11);}if(jumpQueued&&player.grounded){player.vy=save.skateboard?-535:-560;player.grounded=false;tone(420,.09,'triangle',.025);}jumpQueued=false;const oldBottom=player.y+player.h;player.x=Math.max(0,Math.min(l.width-player.w,player.x+player.vx*dt));player.vy=Math.min(760,player.vy+1000*dt);player.y+=player.vy*dt;player.grounded=false;l.platforms.forEach(([x,y,w])=>{if(player.x+player.w>x&&player.x<x+w&&oldBottom<=y+2&&player.y+player.h>=y&&player.vy>=0){player.y=y-player.h;player.vy=0;player.grounded=true;player.checkpointX=player.x;player.checkpointY=y-player.h;}});if(player.safe>0)player.safe=Math.max(0,player.safe-dt);\nenemies.forEach(e=>{if(!e.alive)return;e.x+=e.direction*e.speed*60*dt;if(e.x<e.min||e.x+e.width>e.max)e.direction*=-1;const touch=player.x<e.x+e.width&&player.x+player.w>e.x&&player.y<e.y+e.height&&player.y+player.h>e.y;if(!touch)return;if(oldBottom<=e.y+12&&player.vy>0){e.alive=false;player.vy=-320;points(25);pickupSound();burst(e.x+15,e.y+12,'#a8ed73');setStatus('Stworek bezpiecznie odleciał! +25 pkt');}else hurt();});\nif(boss){if(player.x>boss.min-170)boss.active=true;if(boss.active&&!boss.defeated){boss.x+=boss.direction*70*dt;if(boss.x<boss.min||boss.x+50>boss.max)boss.direction*=-1;if(boss.flash>0)boss.flash=Math.max(0,boss.flash-dt);const touch=player.x<boss.x+50&&player.x+player.w>boss.x&&player.y<boss.y+50&&player.y+player.h>boss.y;if(touch&&player.safe<=0){if(oldBottom<=boss.y+20&&player.vy>0)hitBoss();else hurt();}}}\ncollect();particles.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=.12;p.life--;});particles=particles.filter(p=>p.life>0);if(player.y>H+70){fall();if(state!=='playing')return;}camera=Math.max(0,Math.min(l.width-W,player.x-W*.36));if(player.x>l.goal&&boss.defeated)complete();}\nfunction rr(x,y,w,h,r){const q=Math.min(r,w/2,h/2);ctx.beginPath();ctx.moveTo(x+q,y);ctx.lineTo(x+w-q,y);ctx.quadraticCurveTo(x+w,y,x+w,y+q);ctx.lineTo(x+w,y+h-q);ctx.quadraticCurveTo(x+w,y+h,x+w-q,y+h);ctx.lineTo(x+q,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-q);ctx.lineTo(x,y+q);ctx.quadraticCurveTo(x,y,x+q,y);ctx.closePath();}\nfunction background(l){const g=ctx.createLinearGradient(0,0,0,H);g.addColorStop(0,l.sky[0]);g.addColorStop(1,l.sky[1]);ctx.fillStyle=g;ctx.fillRect(0,0,W,H);for(let i=0;i<6;i++){const x=((i*230-camera*.16)%1450+1450)%1450-180;ctx.fillStyle=i%2?'#79c977':'#66b97a';ctx.beginPath();ctx.ellipse(x,470+(i%2)*18,180,105,0,Math.PI,Math.PI*2);ctx.fill();}for(let i=0;i<7;i++){const x=((i*190-camera*.27)%1300+1300)%1300-100,y=55+(i%3)*49;ctx.fillStyle='#ffffffb8';ctx.beginPath();ctx.arc(x,y,22,0,Math.PI*2);ctx.arc(x+25,y-9,28,0,Math.PI*2);ctx.arc(x+52,y,21,0,Math.PI*2);ctx.fill();}}\nfunction platforms(l){l.platforms.forEach(([x,y,w,h])=>{rr(x,y+5,w,h,7);ctx.fillStyle=l.ground;ctx.fill();rr(x,y,w,14,7);ctx.fillStyle=l.grass;ctx.fill();});}\nfunction star(x,y){ctx.save();ctx.translate(x,y+Math.sin(animTime*3+x)*3);ctx.rotate(animTime*2);ctx.beginPath();for(let i=0;i<10;i++){const a=-Math.PI/2+i*Math.PI/5,r=i%2===0?13:5.5,px=Math.cos(a)*r,py=Math.sin(a)*r;if(!i)ctx.moveTo(px,py);else ctx.lineTo(px,py);}ctx.closePath();ctx.fillStyle='#ffe25d';ctx.fill();ctx.strokeStyle='#d38d19';ctx.lineWidth=2;ctx.stroke();ctx.restore();}\nfunction drawEnemy(e){if(!e.alive)return;ctx.save();ctx.translate(e.x+15,e.y+Math.sin(animTime*8+e.phase)*2);ctx.fillStyle='#29394b';ctx.fillRect(-14,14,28,9);ctx.fillStyle='#88c95b';ctx.beginPath();ctx.ellipse(0,0,15,13,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(-5,-2,3,0,Math.PI*2);ctx.arc(5,-2,3,0,Math.PI*2);ctx.fill();ctx.restore();}\nfunction drawBoss(){if(!boss||boss.defeated||!boss.active)return;ctx.save();ctx.translate(boss.x+25,boss.y+Math.sin(animTime*5)*3);ctx.fillStyle=boss.flash>0?'#fff5b2':'#54466c';ctx.beginPath();ctx.ellipse(0,24,28,25,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#75618d';ctx.beginPath();ctx.arc(0,-1,22,0,Math.PI*2);ctx.fill();ctx.fillStyle='#eedaff';ctx.beginPath();ctx.moveTo(-17,-15);ctx.lineTo(-24,-31);ctx.lineTo(-7,-22);ctx.moveTo(17,-15);ctx.lineTo(24,-31);ctx.lineTo(7,-22);ctx.fill();ctx.fillStyle='#ffdf62';ctx.beginPath();ctx.arc(-7,-4,4,0,Math.PI*2);ctx.arc(7,-4,4,0,Math.PI*2);ctx.fill();ctx.restore();ctx.fillStyle='#17233a';ctx.fillRect(boss.x-14,boss.y-25,78,10);ctx.fillStyle='#ff6c73';ctx.fillRect(boss.x-12,boss.y-23,74*(boss.hp/boss.maxHp),6);ctx.fillStyle='#fff';ctx.font='bold 14px system-ui';ctx.textAlign='center';ctx.fillText(boss.name,boss.x+25,boss.y-31);}\nfunction drawPlayer(){if(!player||player.safe>0&&Math.floor(animTime*15)%2===0)return;const moving=player.grounded&&Math.abs(player.vx)>5;ctx.save();ctx.translate(player.x+15,player.y+(moving?Math.sin(player.walk)*2:0));if(player.facing<0)ctx.scale(-1,1);if(save.skateboard){ctx.save();ctx.translate(0,41);ctx.rotate(moving?Math.sin(animTime*16)*.035:0);rr(-22,-4,44,7,3);ctx.fillStyle='#19bce0';ctx.fill();ctx.fillStyle='#ffe65c';ctx.beginPath();ctx.arc(-13,5,3,0,Math.PI*2);ctx.arc(13,5,3,0,Math.PI*2);ctx.fill();ctx.restore();}ctx.fillStyle='#d34e4c';rr(-13,25,26,15,5);ctx.fill();ctx.fillStyle='#f0bd76';rr(-16,36,13,6,3);ctx.fill();rr(3,36,13,6,3);ctx.fill();ctx.fillStyle='#ffca43';rr(-17,20,9,16,4);ctx.fill();ctx.fillStyle='#347fce';rr(-12,19,24,19,5);ctx.fill();ctx.fillStyle='#f1b77a';ctx.beginPath();ctx.arc(0,12,12,0,Math.PI*2);ctx.fill();ctx.fillStyle='#593822';ctx.beginPath();ctx.arc(0,8,12,Math.PI,Math.PI*2);ctx.lineTo(12,11);ctx.quadraticCurveTo(0,6,-12,12);ctx.fill();ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(4,13,3,0,Math.PI*2);ctx.fill();ctx.restore();}\nfunction goal(l){ctx.save();ctx.translate(l.goal,442);ctx.globalAlpha=boss.defeated?1:.4;['#ff6868','#ffbd4d','#ffe76c','#63d68e','#68c9ff'].forEach((c,i)=>{ctx.strokeStyle=c;ctx.lineWidth=8;ctx.beginPath();ctx.arc(0,0,36-i*5,Math.PI,Math.PI*2);ctx.stroke();});ctx.fillStyle='#fff7c0';ctx.beginPath();ctx.ellipse(0,0,13,8,0,0,Math.PI*2);ctx.fill();ctx.restore();}\nfunction draw(){const l=LEVELS[levelIndex]||LEVELS[0];background(l);ctx.save();ctx.translate(-camera,0);platforms(l);stars.forEach(s=>{if(!s.taken)star(s.x,s.y);});if(firefly&&!firefly.rescued){ctx.fillStyle='rgba(199,255,105,.42)';ctx.beginPath();ctx.arc(firefly.x,firefly.y+Math.sin(animTime*5)*4,21,0,Math.PI*2);ctx.fill();ctx.fillStyle='#fff3a0';ctx.beginPath();ctx.arc(firefly.x,firefly.y,7,0,Math.PI*2);ctx.fill();}enemies.forEach(drawEnemy);drawBoss();goal(l);particles.forEach(p=>{ctx.globalAlpha=Math.max(0,p.life/35);ctx.fillStyle=p.color;ctx.beginPath();ctx.arc(p.x,p.y,p.size,0,Math.PI*2);ctx.fill();});ctx.globalAlpha=1;drawPlayer();ctx.restore();rr(15,14,Math.min(400,140+l.name.length*9),36,11);ctx.fillStyle='#153752d9';ctx.fill();ctx.fillStyle='#fff';ctx.font='bold 16px system-ui';ctx.textAlign='left';ctx.fillText(l.name+' • '+(levelIndex+1)+'/'+LEVELS.length,27,38);if(state==='playing'&&boss.active&&!boss.defeated){ctx.fillStyle='#17324d';ctx.font='bold 16px system-ui';ctx.textAlign='center';ctx.fillText('BOSS: '+boss.name+'  ❤️ '+boss.hp+'/'+boss.maxHp,W/2,80);}}\nfunction frame(now){if(!last)last=now;const dt=Math.min((now-last)/1000,.033);last=now;animTime+=dt;if(state==='playing')update(dt);draw();requestAnimationFrame(frame);}\nwindow.addEventListener('keydown',e=>{const k=e.key.toLowerCase();if(['arrowleft','arrowright','arrowup',' '].includes(k))e.preventDefault();if(k==='arrowleft'||k==='a')keys.left=true;if(k==='arrowright'||k==='d')keys.right=true;if(k==='arrowup'||k==='w'||k===' '){if(!keys.jump)jumpQueued=true;keys.jump=true;}if((k==='escape'||k==='p')&&state==='playing')showPause();else if((k==='escape'||k==='p')&&state==='paused'){state='playing';screen.hidden=true;last=0;}});\nwindow.addEventListener('keyup',e=>{const k=e.key.toLowerCase();if(k==='arrowleft'||k==='a')keys.left=false;if(k==='arrowright'||k==='d')keys.right=false;if(k==='arrowup'||k==='w'||k===' ')keys.jump=false;});window.addEventListener('blur',()=>{keys.left=keys.right=keys.jump=false;if(state==='playing')showPause();});\ndocument.querySelectorAll('[data-key]').forEach(b=>{const k=b.dataset.key;b.addEventListener('pointerdown',e=>{e.preventDefault();try{b.setPointerCapture(e.pointerId);}catch{}if(k==='jump'&&!keys.jump)jumpQueued=true;keys[k]=true;b.classList.add('pressed');});const release=()=>{keys[k]=false;b.classList.remove('pressed');};['pointerup','pointercancel','lostpointercapture','pointerleave'].forEach(t=>b.addEventListener(t,release));});\nnameInput.addEventListener('keydown',e=>{if(e.key==='Enter')startAdventure();});renderRank();hud();showMenu();requestAnimationFrame(frame);\n})();\n</script>\n</body>\n</html>\n
+<!DOCTYPE html>
+<html lang="pl">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, viewport-fit=cover">
+  <meta name="theme-color" content="#102b4e">
+  <title>NIKO POGROMCA — Strażnik Kolorów</title>
+  <style>
+    :root { font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; color: #f3fbff; background: #0c1e35; }
+    * { box-sizing: border-box; }
+    body { margin: 0; min-height: 100vh; padding: 14px; background: radial-gradient(ellipse at top, #2b6687, #102640 55%, #091426); }
+    button, input { font: inherit; }
+    button { min-height: 46px; padding: 9px 15px; border: 2px solid #f1c84d; border-radius: 12px; background: linear-gradient(#ffe985, #ffc83f); color: #382a08; font-weight: 800; cursor: pointer; box-shadow: 0 4px 0 #a9781d; }
+    button:hover:not(:disabled) { filter: brightness(1.05); }
+    button:disabled { opacity: .46; cursor: not-allowed; }
+    button.secondary { background: linear-gradient(#e4f6ff, #b9e2f5); border-color: #9bd3e9; box-shadow: 0 4px 0 #4e829d; color: #16344b; }
+    button.quiet { background: #173a59; color: #fff; border-color: #5584a3; box-shadow: 0 4px 0 #08192a; }
+    .shell { width: min(1120px, 100%); margin: 0 auto; }
+    .topbar { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; margin-bottom: 12px; }
+    .brand { display: flex; align-items: center; gap: 11px; }
+    .mark { width: 50px; height: 50px; display: grid; place-items: center; border: 2px solid #79d4ec; border-radius: 15px; background: #17456a; font-size: 28px; }
+    h1 { margin: 0; color: #fff1a8; font-size: clamp(1.4rem, 3.5vw, 2.2rem); text-shadow: 0 2px #795221; }
+    .tagline { margin: 3px 0 0; color: #c4e9f8; font-size: .86rem; }
+    .hud { display: flex; flex-wrap: wrap; gap: 7px; }
+    .badge { min-height: 40px; display: inline-flex; align-items: center; gap: 6px; padding: 6px 11px; border: 1px solid #5486a5; border-radius: 12px; background: #163958; font-weight: 800; white-space: nowrap; }
+    .game-panel { overflow: hidden; border: 2px solid #548eaa; border-radius: 18px; background: #0b1c31; box-shadow: 0 12px 32px #0005; }
+    .stage { position: relative; overflow: hidden; background: #73d5f4; }
+    #game { display: block; width: 100%; aspect-ratio: 16 / 9; background: #73d5f4; touch-action: none; }
+    .screen { position: absolute; inset: 0; display: flex; align-items: center; justify-content: center; overflow: auto; padding: 14px; background: #091a2bc9; }
+    .screen[hidden] { display: none; }
+    .card { width: min(680px, 100%); max-height: 100%; overflow: auto; padding: clamp(14px, 3vw, 25px); text-align: center; border: 2px solid #78cce4; border-radius: 20px; background: linear-gradient(150deg, #17466a, #102b49); box-shadow: 0 12px 30px #0006; }
+    .hero { font-size: clamp(2.2rem, 7vw, 4rem); margin: 0 0 4px; }
+    .card h2 { margin: 0 0 8px; color: #ffe985; font-size: clamp(1.6rem, 5vw, 2.7rem); line-height: 1.08; }
+    .card p { color: #d7f2ff; line-height: 1.45; margin: 8px 0 14px; }
+    .row, .buttons, .level-picks { display: flex; flex-wrap: wrap; justify-content: center; gap: 9px; margin: 12px 0; }
+    input { width: min(250px, 100%); min-height: 44px; padding: 9px 12px; border: 2px solid #99d9eb; border-radius: 11px; background: #f6fcff; color: #17324d; }
+    .level-picks { max-height: 95px; overflow: auto; }
+    .level-picks button { font-size: .82rem; padding: 7px 10px; }
+    .muted { color: #b7d9e9 !important; font-size: .86rem; }
+    .help { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; padding: 11px 15px; color: #c8e8f4; font-size: .88rem; }
+    .help strong { color: #fff1a8; }
+    .under { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 12px; padding-top: 11px; }
+    #status { min-height: 1.5em; margin: 0; font-weight: 700; }
+    .touch { display: flex; justify-content: center; gap: 9px; }
+    .touch button { min-width: 70px; min-height: 54px; padding: 7px; font-size: 1.2rem; touch-action: none; user-select: none; -webkit-user-select: none; }
+    .touch button.pressed { transform: translateY(2px); filter: brightness(.9); }
+    .rank { margin-top: 13px; padding: 13px 17px; border: 1px solid #3c6b8a; border-radius: 15px; background: #112d49; }
+    .rank-head { display: flex; justify-content: space-between; flex-wrap: wrap; gap: 8px; }
+    .rank h2 { margin: 0; color: #ffe985; font-size: 1rem; }
+    .rank ol { display: flex; flex-wrap: wrap; gap: 5px 27px; padding-left: 22px; }
+    .sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; }
+    @media (max-width: 620px) {
+      body { padding: 8px; }
+      .brand { gap: 7px; }
+      .mark { width: 42px; height: 42px; font-size: 23px; }
+      .tagline { font-size: .75rem; }
+      .badge { min-height: 36px; padding: 5px 8px; font-size: .83rem; }
+      .under { grid-template-columns: 1fr; }
+      #status { text-align: center; }
+      .help { justify-content: center; text-align: center; font-size: .78rem; padding: 9px; }
+      .touch button { min-width: 78px; min-height: 56px; }
+      .rank ol { display: block; }
+    }
+  </style>
+</head>
+<body>
+  <main class="shell">
+    <header class="topbar">
+      <div class="brand"><div class="mark" aria-hidden="true">🌈</div><div><h1>NIKO POGROMCA</h1><p class="tagline">Dłuższe wyprawy — i deskorolka dla Niko!</p></div></div>
+      <div class="hud" aria-label="Wynik gry">
+        <span class="badge">⭐ <span id="score">0</span></span>
+        <span class="badge" id="lives" aria-label="Życia">❤️❤️❤️</span>
+        <span class="badge">🌟 <span id="star-count">0/20</span></span>
+        <span class="badge">🛹 <span id="skate-status">🔒</span></span>
+        <span class="badge">🌍 <span id="level-label">Menu</span></span>
+      </div>
+    </header>
+    <section class="game-panel" aria-label="Gra Niko Pogromca">
+      <div class="stage">
+        <canvas id="game" width="960" height="540" aria-label="Platformówka. Skacz po długich poziomach, zbieraj gwiazdki i omijaj stworki."></canvas>
+        <div class="screen" id="screen" aria-live="polite"><div class="card">
+          <div class="hero" aria-hidden="true">🧒 ⭐ 🛹</div>
+          <h2 id="screen-title">NIKO POGROMCA</h2>
+          <p id="screen-text">Szary Cień ukradł kolory! Przemierz długie krainy, zbieraj gwiazdki i uratuj świat. Zbierz 20 gwiazdek, by odblokować ulubioną deskorolkę Niko!</p>
+          <div class="row" id="name-row"><label class="sr-only" for="player-name">Pseudonim gracza</label><input id="player-name" maxlength="16" placeholder="Wpisz swój pseudonim" autocomplete="off"></div>
+          <div class="level-picks" id="level-picks" aria-label="Wybierz poziom"></div>
+          <div class="buttons" id="screen-buttons"></div>
+          <p class="muted" id="screen-hint">Laptop: ← → / A D, skok: ↑ / W / spacja. Telefon: użyj przycisków pod grą. Uderzenie stworka zabiera serduszko, ale poziom trwa dalej.</p>
+        </div></div>
+      </div>
+      <div class="help"><span><strong>Ruch:</strong> ← → / A D</span><span><strong>Skok:</strong> ↑ / W / spacja</span><span><strong>Telefon:</strong> przyciski pod grą</span><span><strong>Cel:</strong> dotrzyj do tęczy</span></div>
+    </section>
+    <div class="under">
+      <p id="status" aria-live="polite">Wpisz pseudonim i rozpocznij przygodę!</p>
+      <div class="touch" aria-label="Sterowanie dotykowe"><button type="button" data-key="left" aria-label="W lewo">◀</button><button type="button" data-key="jump" aria-label="Skok">⤒</button><button type="button" data-key="right" aria-label="W prawo">▶</button></div>
+    </div>
+    <section class="rank" aria-label="Lokalny ranking"><div class="rank-head"><h2>🏆 Najlepszy wynik</h2><span class="muted">Zapisany na tym urządzeniu</span></div><ol id="ranking"></ol></section>
+  </main>
+<script>
+(() => {
+  'use strict';
+
+  const SAVE_KEY = 'niko-pogromca-save-v1';
+  const BOARD_KEY = 'niko-pogromca-ranking-v1';
+  const WIDTH = 960;
+  const HEIGHT = 540;
+  const SKATEBOARD_AT = 20;
+
+  // Dłuższe etapy są budowane z podestów o krótkich, przewidywalnych odstępach.
+  // Każda platforma znajduje się w zasięgu skoku: odległości 240 px, różnica wysokości maks. 70 px.
+  const WORLD_INFO = [
+    { name: 'Zaczarowany Las', sky: ['#6dd7ff','#e9fff4'], ground: '#75482e', grass: '#49b653', pattern: [480,430,370,420,360,430,380,440,370,420,360,430,380,450] },
+    { name: 'Wyspy Bąbelków', sky: ['#58b8ea','#ebfbff'], ground: '#83603d', grass: '#53c5a0', pattern: [480,420,350,410,340,400,350,420,360,410,340,400,360,450] },
+    { name: 'Góry Chmur', sky: ['#799dea','#f9f0ff'], ground: '#66517f', grass: '#9cdb8c', pattern: [480,410,340,400,330,390,350,410,340,400,330,390,350,450] },
+    { name: 'Jaskinie Kryształów', sky: ['#4e8acb','#d9e8ff'], ground: '#594477', grass: '#7bd5ca', pattern: [480,420,350,410,340,400,360,420,350,410,340,400,360,450] },
+    { name: 'Ocean Śpiewających Muszli', sky: ['#4ec9e6','#dffaff'], ground: '#396987', grass: '#62d8bd', pattern: [480,410,340,410,340,400,350,420,350,410,340,400,360,450] },
+    { name: 'Twierdza Szarego Cienia', sky: ['#8079b9','#eedfff'], ground: '#514866', grass: '#bc9ce8', pattern: [480,410,340,410,340,400,350,410,340,400,350,410,340,450] }
+  ];
+
+  function buildLevel(info, index) {
+    const platforms = [[0, info.pattern[0], 330, HEIGHT - info.pattern[0]]];
+    const platformStart = 360;
+    const spacing = 240;
+    const platformWidth = 188;
+    for (let i = 1; i < info.pattern.length; i++) {
+      const x = platformStart + (i - 1) * spacing;
+      const y = info.pattern[i];
+      platforms.push([x, y, platformWidth, 28]);
+    }
+    const last = platforms[platforms.length - 1];
+    const endX = last[0] + last[2] + 45;
+    platforms.push([endX, 460, 360, 80]);
+    const goal = endX + 285;
+
+    const stars = [];
+    // Zachowaj pierwsze sześć identyfikatorów i pozycje znane z poprzedniej wersji,
+    // aby nie skasować zapisanego postępu gracza.
+    const legacy = [
+      [[170,435],[455,385],[695,335],[950,385],[1190,325],[1460,415]],
+      [[390,375],[610,305],[830,365],[1060,285],[1290,345],[1580,415]],
+      [[405,365],[630,295],[860,355],[1090,275],[1320,335],[1550,265]],
+      [[415,375],[640,305],[870,365],[1100,285],[1330,355],[1580,415]],
+      [[415,365],[650,295],[890,365],[1130,285],[1370,355],[1630,415]],
+      [[415,365],[650,295],[890,365],[1130,285],[1370,355],[1610,275]]
+    ];
+    legacy[index].forEach(point => stars.push(point.slice()));
+    for (let i = 1; i < platforms.length - 1; i++) {
+      const p = platforms[i];
+      // Dwie gwiazdki w większości sekcji, bez dokładania duplikatów blisko starych.
+      const candidates = [[p[0] + 58, p[1] - 42], [p[0] + 138, p[1] - 84]];
+      candidates.forEach((point, n) => {
+        if (stars.length < 6 || (i + n) % 2 !== 0) return;
+        if (stars.some(old => Math.abs(old[0] - point[0]) < 45 && Math.abs(old[1] - point[1]) < 35)) return;
+        stars.push(point);
+      });
+    }
+
+    const enemies = [];
+    for (let i = 2; i < platforms.length - 1; i += 3) {
+      const p = platforms[i];
+      enemies.push({ x: p[0] + 75, y: p[1] - 29, min: p[0] + 18, max: p[0] + p[2] - 12, speed: 0.85 + (index % 3) * 0.12 });
+    }
+    const level = { ...info, width: goal + 100, goal, platforms, stars, enemies, firefly: [platforms[5][0] + 90, platforms[5][1] - 50], boss: null };
+    if (index === 2 || index === 5) {
+      level.boss = { x: goal - 170, y: 405, min: goal - 235, max: goal - 50, hp: 3, name: index === 2 ? 'Strażnik Lasu' : 'Szary Cień' };
+    }
+    return level;
+  }
+  const LEVELS = WORLD_INFO.map(buildLevel);
+
+  const canvas = document.getElementById('game');
+  const ctx = canvas && canvas.getContext ? canvas.getContext('2d') : null;
+  const screen = document.getElementById('screen');
+  const titleEl = document.getElementById('screen-title');
+  const textEl = document.getElementById('screen-text');
+  const hintEl = document.getElementById('screen-hint');
+  const buttonsEl = document.getElementById('screen-buttons');
+  const picksEl = document.getElementById('level-picks');
+  const nameRow = document.getElementById('name-row');
+  const nameInput = document.getElementById('player-name');
+  const statusEl = document.getElementById('status');
+  const scoreEl = document.getElementById('score');
+  const livesEl = document.getElementById('lives');
+  const starCountEl = document.getElementById('star-count');
+  const skateStatusEl = document.getElementById('skate-status');
+  const levelLabelEl = document.getElementById('level-label');
+  const rankingEl = document.getElementById('ranking');
+  const keys = { left: false, right: false, jump: false };
+
+  function freshSave() { return { name: '', score: 0, unlocked: 0, completed: [], collected: [], rescued: [], bosses: [], skateboard: false }; }
+  function readSave() {
+    try {
+      const raw = JSON.parse(localStorage.getItem(SAVE_KEY) || 'null');
+      if (!raw || typeof raw !== 'object') return freshSave();
+      const result = {
+        name: typeof raw.name === 'string' ? raw.name.slice(0,16) : '',
+        score: Number.isFinite(raw.score) ? Math.max(0,Math.floor(raw.score)) : 0,
+        unlocked: Number.isInteger(raw.unlocked) ? Math.max(0,Math.min(LEVELS.length-1,raw.unlocked)) : 0,
+        completed: Array.isArray(raw.completed) ? raw.completed.filter(n => Number.isInteger(n) && n >= 0 && n < LEVELS.length) : [],
+        collected: Array.isArray(raw.collected) ? raw.collected.filter(v => typeof v === 'string') : [],
+        rescued: Array.isArray(raw.rescued) ? raw.rescued.filter(n => Number.isInteger(n) && n >= 0 && n < LEVELS.length) : [],
+        bosses: Array.isArray(raw.bosses) ? raw.bosses.filter(n => Number.isInteger(n) && n >= 0 && n < LEVELS.length) : [],
+        skateboard: raw.skateboard === true
+      };
+      result.skateboard = result.skateboard || result.collected.length >= SKATEBOARD_AT;
+      return result;
+    } catch { return freshSave(); }
+  }
+  function readBoard() {
+    try {
+      const raw = JSON.parse(localStorage.getItem(BOARD_KEY) || '{}');
+      if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return {};
+      const result = {};
+      Object.keys(raw).forEach(name => { if (Number.isFinite(raw[name]) && raw[name] >= 0) result[name.slice(0,16)] = Math.floor(raw[name]); });
+      return result;
+    } catch { return {}; }
+  }
+
+  let save = readSave();
+  let board = readBoard();
+  let state = 'menu';
+  let levelIndex = 0;
+  let score = save.score || 0;
+  let lives = 3;
+  let cameraX = 0;
+  let lastTime = 0;
+  let animTime = 0;
+  let player = null;
+  let stars = [];
+  let enemies = [];
+  let boss = null;
+  let firefly = null;
+  let particles = [];
+  let jumpQueued = false;
+  let soundOn = true;
+  let audio = null;
+
+  function setStatus(message) { statusEl.textContent = message; }
+  function updateHud() {
+    scoreEl.textContent = String(score);
+    livesEl.textContent = '❤️'.repeat(Math.max(0,lives)) + '🤍'.repeat(Math.max(0,3-lives));
+    starCountEl.textContent = Math.min(save.collected.length, SKATEBOARD_AT) + '/' + SKATEBOARD_AT;
+    skateStatusEl.textContent = save.skateboard ? '✅' : '🔒';
+    levelLabelEl.textContent = state === 'playing' ? (levelIndex + 1) + '/' + LEVELS.length : state === 'victory' ? 'Finał!' : 'Menu';
+  }
+  function renderRanking() {
+    rankingEl.replaceChildren();
+    const entries = Object.entries(board).sort((a,b) => b[1] - a[1] || a[0].localeCompare(b[0],'pl')).slice(0,5);
+    if (!entries.length) { const li = document.createElement('li'); li.textContent = 'Zagraj i ustanów pierwszy rekord!'; rankingEl.appendChild(li); return; }
+    entries.forEach(([name,points]) => { const li = document.createElement('li'); li.textContent = name + ' — ' + points + ' pkt'; rankingEl.appendChild(li); });
+  }
+  function persist() {
+    try { localStorage.setItem(SAVE_KEY,JSON.stringify(save)); localStorage.setItem(BOARD_KEY,JSON.stringify(board)); }
+    catch { setStatus('Nie udało się zapisać postępu — sprawdź ustawienia przeglądarki.'); }
+    updateHud(); renderRanking();
+  }
+  function saveScore() {
+    const name = save.name || 'Niko';
+    board[name] = Math.max(board[name] || 0,score);
+    save.score = Math.max(save.score || 0,score);
+    persist();
+  }
+  function addButton(label, callback, style) {
+    const button = document.createElement('button'); button.type = 'button'; button.textContent = label;
+    if (style) button.className = style;
+    button.addEventListener('click',callback); buttonsEl.appendChild(button);
+  }
+  function clearButtons() { buttonsEl.replaceChildren(); }
+  function cleanName(value) { return String(value || '').replace(/[<>]/g,'').trim().slice(0,16) || 'Niko'; }
+  function setScreen(title,text,hint,showName) {
+    titleEl.textContent=title; textEl.textContent=text; hintEl.textContent=hint;
+    nameRow.style.display=showName?'flex':'none'; screen.hidden=false;
+  }
+  function renderLevelPicks() {
+    picksEl.replaceChildren();
+    LEVELS.forEach((level,index) => {
+      const button=document.createElement('button'); button.type='button'; button.className='secondary';
+      button.textContent=(index+1)+'. '+level.name; button.disabled=index>save.unlocked;
+      button.addEventListener('click',()=>{save.name=cleanName(nameInput.value||save.name); startLevel(index);});
+      picksEl.appendChild(button);
+    });
+  }
+  function showMenu() {
+    state='menu'; clearButtons();
+    setScreen('NIKO POGROMCA','Szary Cień ukradł kolory! Przemierz długie krainy, zbieraj gwiazdki i uratuj świat. Po 20 gwiazdkach Niko dostanie swoją ukochaną deskorolkę!','Laptop: ← → / A D, skok: ↑ / W / spacja. Telefon: przyciski pod grą. Trafienie stworka zabiera serduszko, ale nie resetuje poziomu.',true);
+    nameInput.value=save.name; renderLevelPicks();
+    addButton('Rozpocznij przygodę',startAdventure);
+    if(save.score>0||save.completed.length) addButton('Kontynuuj',continueAdventure,'secondary');
+    addButton(soundOn?'🔊 Dźwięk: włączony':'🔇 Dźwięk: wyłączony',()=>{soundOn=!soundOn;showMenu();},'quiet');
+    setStatus('Wpisz pseudonim i rozpocznij przygodę!'); updateHud();
+  }
+  function showPause() {
+    if(state!=='playing')return;
+    state='paused';clearButtons();setScreen('Pauza','Niko odpoczywa. Gotowy do dalszej jazdy?','Wznów grę albo wróć do menu.',false);
+    addButton('Wznów grę',()=>{state='playing';screen.hidden=true;lastTime=0;});
+    addButton('Menu główne',showMenu,'secondary');updateHud();
+  }
+  function showEnd(kind,title,text) {
+    state=kind;clearButtons();setScreen(title,text,'Wynik tej przygody: '+score+' punktów.',false);
+    if(kind==='levelComplete'&&levelIndex<LEVELS.length-1)addButton('Następny poziom',()=>startLevel(levelIndex+1));
+    if(kind==='levelComplete'&&levelIndex===LEVELS.length-1)addButton('Zobacz finał',finishAdventure);
+    if(kind==='levelComplete'||kind==='gameover'||kind==='victory')addButton(kind==='gameover'?'Spróbuj jeszcze raz':'Menu główne',kind==='gameover'?restartLevel:showMenu,'secondary');
+    updateHud();
+  }
+  function startAdventure() {
+    save.name=cleanName(nameInput.value||save.name);score=0;lives=3;
+    const next=LEVELS.findIndex((_,i)=>!save.completed.includes(i));
+    startLevel(next<0?0:Math.min(next,save.unlocked));
+  }
+  function continueAdventure() {
+    save.name=cleanName(nameInput.value||save.name);score=save.score||0;lives=3;
+    const next=LEVELS.findIndex((_,i)=>!save.completed.includes(i));
+    startLevel(next<0?save.unlocked:Math.min(next,save.unlocked));
+  }
+  function startLevel(index) {
+    levelIndex=Math.max(0,Math.min(LEVELS.length-1,index));
+    const level=LEVELS[levelIndex];
+    player={x:42,y:438,w:30,h:42,vx:0,vy:0,grounded:true,facing:1,safe:0,walk:0,checkpointX:42,checkpointY:438};
+    stars=level.stars.map((point,i)=>({x:point[0],y:point[1],id:levelIndex+'-'+i,taken:save.collected.includes(levelIndex+'-'+i)}));
+    enemies=level.enemies.map(enemy=>({...enemy,direction:1,alive:true,phase:Math.random()*6,width:30,height:28}));
+    firefly={x:level.firefly[0],y:level.firefly[1],rescued:save.rescued.includes(levelIndex)};
+    if(level.boss){const beaten=save.bosses.includes(levelIndex);boss={x:level.boss.x,y:level.boss.y,min:level.boss.min,max:level.boss.max,hp:beaten?0:level.boss.hp,maxHp:level.boss.hp,name:level.boss.name,direction:-1,active:false,flash:0,defeated:beaten};}else boss=null;
+    particles=[];cameraX=0;jumpQueued=false;state='playing';screen.hidden=true;lastTime=0;
+    setStatus('Poziom '+(levelIndex+1)+': '+level.name+'. Powodzenia, '+(save.name||'Niko')+'!');updateHud();
+  }
+  function restartLevel(){lives=3;startLevel(levelIndex);}
+  function finishAdventure(){saveScore();showEnd('victory','Kraina odzyskała kolory! 🌈','Niko pokonał Szarego Cienia. Wszyscy mieszkańcy są bezpieczni — jesteś prawdziwym Strażnikiem Kolorów!');}
+  function tone(freq,duration,type,volume) {
+    if(!soundOn)return;
+    try{const AudioCtor=window.AudioContext||window.webkitAudioContext;if(!AudioCtor)return;if(!audio)audio=new AudioCtor();if(audio.state==='suspended')audio.resume();const osc=audio.createOscillator(),gain=audio.createGain();osc.type=type;osc.frequency.value=freq;gain.gain.value=volume;gain.gain.exponentialRampToValueAtTime(.0001,audio.currentTime+duration);osc.connect(gain);gain.connect(audio.destination);osc.start();osc.stop(audio.currentTime+duration);}catch{}
+  }
+  function collectSound(){tone(740,.08,'sine',.04);window.setTimeout(()=>tone(980,.1,'sine',.035),60);}
+  function addPoints(amount){score+=amount;updateHud();}
+  function burst(x,y,color,count){for(let i=0;i<count;i++)particles.push({x:x+(Math.random()-.5)*8,y:y+(Math.random()-.5)*8,vx:(Math.random()-.5)*5,vy:-2-Math.random()*3,life:35,size:3+Math.random()*4,color});}
+  function collectItems() {
+    stars.forEach(star=>{
+      if(star.taken||Math.abs(player.x+player.w/2-star.x)>27||Math.abs(player.y+player.h/2-star.y)>31)return;
+      star.taken=true;
+      if(!save.collected.includes(star.id)){
+        save.collected.push(star.id);addPoints(10);collectSound();burst(star.x,star.y,'#ffe45e',12);
+        if(!save.skateboard&&save.collected.length>=SKATEBOARD_AT){save.skateboard=true;setStatus('20 gwiazdek! Niko dostał swoją deskorolkę! 🛹');tone(880,.2,'sine',.05);burst(player.x+15,player.y+20,'#72e5ff',24);}
+        else setStatus('Gwiazdka zebrana! '+Math.min(save.collected.length,SKATEBOARD_AT)+'/'+SKATEBOARD_AT+' do deskorolki.');
+        persist();
+      }
+    });
+    if(!firefly.rescued&&Math.abs(player.x+player.w/2-firefly.x)<31&&Math.abs(player.y+player.h/2-firefly.y)<34){
+      firefly.rescued=true;if(!save.rescued.includes(levelIndex)){save.rescued.push(levelIndex);addPoints(50);persist();}
+      setStatus('Świetlik uratowany! +50 punktów ✨');collectSound();burst(firefly.x,firefly.y,'#baff69',16);
+    }
+  }
+  function hitPlayer() {
+    if(player.safe>0||state!=='playing')return;
+    lives--;player.safe=1.6;player.vy=-90;player.vx=-player.facing*55;tone(180,.18,'triangle',.05);burst(player.x+15,player.y+20,'#ff7788',12);updateHud();
+    if(lives<=0){saveScore();showEnd('gameover','Koniec wyprawy','Niko stracił wszystkie serduszka. Spróbuj jeszcze raz!');}
+    else setStatus('Stracono serduszko — zostało '+lives+'. Poziom trwa dalej!');
+  }
+  function fallRespawn() {
+    lives--;player.x=player.checkpointX;player.y=player.checkpointY;player.vx=0;player.vy=0;player.safe=1.6;player.grounded=true;updateHud();
+    if(lives<=0){saveScore();showEnd('gameover','Koniec wyprawy','Niko stracił wszystkie serduszka. Spróbuj jeszcze raz!');}
+    else setStatus('Niko wrócił na bezpieczny podest. Zostało serduszek: '+lives+'.');
+  }
+  function hitBoss() {
+    if(!boss||boss.defeated)return;
+    boss.hp--;boss.flash=.5;player.vy=-340;player.safe=.65;tone(520,.12,'square',.035);burst(boss.x+25,boss.y+15,'#ffd85c',16);
+    if(boss.hp<=0){boss.defeated=true;if(!save.bosses.includes(levelIndex)){save.bosses.push(levelIndex);addPoints(250);persist();}setStatus(boss.name+' pokonany! Brama otwarta. +250 pkt 🏆');collectSound();}
+    else setStatus(boss.name+': jeszcze '+boss.hp+' trafienia!');
+  }
+  function completeLevel() {
+    if(state!=='playing')return;
+    state='levelComplete';if(!save.completed.includes(levelIndex)){save.completed.push(levelIndex);addPoints(100);}
+    save.unlocked=Math.max(save.unlocked,Math.min(levelIndex+1,LEVELS.length-1));
+    const name=save.name||'Niko';board[name]=Math.max(board[name]||0,score);save.score=Math.max(save.score||0,score);persist();
+    const last=levelIndex===LEVELS.length-1;
+    showEnd('levelComplete',last?'Ostatni etap ukończony! 🎉':'Etap ukończony! 🎉',last?'Niko dotarł do celu i przywrócił kolory krainie!':'Brawo! +100 punktów. Następna przygoda: '+LEVELS[levelIndex+1].name+'.');
+  }
+
+  function update(dt) {
+    if(state!=='playing'||!player)return;
+    const level=LEVELS[levelIndex],direction=(keys.right?1:0)-(keys.left?1:0);
+    const moveSpeed=save.skateboard?315:250;
+    player.vx=direction*moveSpeed;
+    if(direction){player.facing=direction;player.walk+=dt*(save.skateboard?16:11);}
+    if(jumpQueued&&player.grounded){player.vy=save.skateboard?-535:-560;player.grounded=false;tone(420,.09,'triangle',.025);}
+    jumpQueued=false;
+    const oldBottom=player.y+player.h;
+    player.x=Math.max(0,Math.min(level.width-player.w,player.x+player.vx*dt));
+    player.vy=Math.min(760,player.vy+1000*dt);player.y+=player.vy*dt;player.grounded=false;
+    level.platforms.forEach(([px,py,pw])=>{
+      const overlap=player.x+player.w>px&&player.x<px+pw;
+      if(overlap&&oldBottom<=py+2&&player.y+player.h>=py&&player.vy>=0){player.y=py-player.h;player.vy=0;player.grounded=true;player.checkpointX=player.x;player.checkpointY=py-player.h;}
+    });
+    if(player.safe>0)player.safe=Math.max(0,player.safe-dt);
+
+    enemies.forEach(enemy=>{
+      if(!enemy.alive)return;
+      enemy.x+=enemy.direction*enemy.speed*60*dt;
+      if(enemy.x<enemy.min||enemy.x+enemy.width>enemy.max)enemy.direction*=-1;
+      const overlap=player.x<enemy.x+enemy.width&&player.x+player.w>enemy.x&&player.y<enemy.y+enemy.height&&player.y+player.h>enemy.y;
+      if(!overlap)return;
+      if(oldBottom<=enemy.y+12&&player.vy>0){enemy.alive=false;player.vy=-320;addPoints(25);collectSound();burst(enemy.x+15,enemy.y+12,'#a8ed73',14);setStatus('Stworek bezpiecznie odleciał! +25 pkt');}
+      else hitPlayer();
+    });
+
+    if(boss){
+      if(player.x>boss.min-170)boss.active=true;
+      if(boss.active&&!boss.defeated){
+        boss.x+=boss.direction*70*dt;
+        if(boss.x<boss.min||boss.x+50>boss.max)boss.direction*=-1;
+        if(boss.flash>0)boss.flash=Math.max(0,boss.flash-dt);
+        const overlap=player.x<boss.x+50&&player.x+player.w>boss.x&&player.y<boss.y+50&&player.y+player.h>boss.y;
+        if(overlap&&player.safe<=0){if(oldBottom<=boss.y+20&&player.vy>0)hitBoss();else hitPlayer();}
+      }
+    }
+
+    collectItems();
+    particles.forEach(p=>{p.x+=p.vx;p.y+=p.vy;p.vy+=.12;p.life--;});particles=particles.filter(p=>p.life>0);
+    if(player.y>HEIGHT+70){fallRespawn();if(state!=='playing')return;}
+    cameraX=Math.max(0,Math.min(level.width-WIDTH,player.x-WIDTH*.36));
+    if(player.x>level.goal&&(!boss||boss.defeated))completeLevel();
+  }
+
+  function rounded(x,y,w,h,r){const q=Math.min(r,w/2,h/2);ctx.beginPath();ctx.moveTo(x+q,y);ctx.lineTo(x+w-q,y);ctx.quadraticCurveTo(x+w,y,x+w,y+q);ctx.lineTo(x+w,y+h-q);ctx.quadraticCurveTo(x+w,y+h,x+w-q,y+h);ctx.lineTo(x+q,y+h);ctx.quadraticCurveTo(x,y+h,x,y+h-q);ctx.lineTo(x,y+q);ctx.quadraticCurveTo(x,y,x+q,y);ctx.closePath();}
+  function drawBackground(level){const g=ctx.createLinearGradient(0,0,0,HEIGHT);g.addColorStop(0,level.sky[0]);g.addColorStop(1,level.sky[1]);ctx.fillStyle=g;ctx.fillRect(0,0,WIDTH,HEIGHT);for(let i=0;i<6;i++){const x=((i*230-cameraX*.16)%1450+1450)%1450-180;ctx.fillStyle=i%2?'#79c977':'#66b97a';ctx.beginPath();ctx.ellipse(x,470+(i%2)*18,180,105,0,Math.PI,Math.PI*2);ctx.fill();}for(let i=0;i<7;i++){const x=((i*190-cameraX*.27)%1300+1300)%1300-100,y=55+(i%3)*49;ctx.fillStyle='#ffffffb8';ctx.beginPath();ctx.arc(x,y,22,0,Math.PI*2);ctx.arc(x+25,y-9,28,0,Math.PI*2);ctx.arc(x+52,y,21,0,Math.PI*2);ctx.fill();}}
+  function drawPlatforms(level){level.platforms.forEach(([x,y,w,h])=>{rounded(x,y+5,w,h,7);ctx.fillStyle=level.ground;ctx.fill();rounded(x,y,w,14,7);ctx.fillStyle=level.grass;ctx.fill();for(let px=x+12;px<x+w-7;px+=38){ctx.fillStyle='#267e4a';ctx.fillRect(px,y+5,9,6);}});}
+  function drawStar(x,y){ctx.save();ctx.translate(x,y+Math.sin(animTime*3+x)*3);ctx.rotate(animTime*2);ctx.beginPath();for(let i=0;i<10;i++){const a=-Math.PI/2+i*Math.PI/5,r=i%2===0?13:5.5,px=Math.cos(a)*r,py=Math.sin(a)*r;if(i===0)ctx.moveTo(px,py);else ctx.lineTo(px,py);}ctx.closePath();ctx.fillStyle='#ffe25d';ctx.strokeStyle='#d38d19';ctx.lineWidth=2;ctx.fill();ctx.stroke();ctx.restore();}
+  function drawFirefly(){if(!firefly||firefly.rescued)return;const y=firefly.y+Math.sin(animTime*5)*4;ctx.fillStyle='rgba(199,255,105,.42)';ctx.beginPath();ctx.arc(firefly.x,y,21,0,Math.PI*2);ctx.fill();ctx.fillStyle='#fff3a0';ctx.beginPath();ctx.arc(firefly.x,y,7,0,Math.PI*2);ctx.fill();}
+  function drawEnemy(enemy){if(!enemy.alive)return;ctx.save();ctx.translate(enemy.x+15,enemy.y+Math.sin(animTime*8+enemy.phase)*2);ctx.fillStyle='#29394b';ctx.fillRect(-14,14,28,9);ctx.fillStyle='#88c95b';ctx.beginPath();ctx.ellipse(0,0,15,13,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(-5,-2,3,0,Math.PI*2);ctx.arc(5,-2,3,0,Math.PI*2);ctx.fill();ctx.restore();}
+  function drawBoss(){if(!boss||boss.defeated||!boss.active)return;ctx.save();ctx.translate(boss.x+25,boss.y+Math.sin(animTime*5)*3);ctx.fillStyle=boss.flash>0?'#fff5b2':'#54466c';ctx.beginPath();ctx.ellipse(0,24,28,25,0,0,Math.PI*2);ctx.fill();ctx.fillStyle='#75618d';ctx.beginPath();ctx.arc(0,-1,22,0,Math.PI*2);ctx.fill();ctx.fillStyle='#eedaff';ctx.beginPath();ctx.moveTo(-17,-15);ctx.lineTo(-24,-31);ctx.lineTo(-7,-22);ctx.moveTo(17,-15);ctx.lineTo(24,-31);ctx.lineTo(7,-22);ctx.fill();ctx.fillStyle='#ffdf62';ctx.beginPath();ctx.arc(-7,-4,4,0,Math.PI*2);ctx.arc(7,-4,4,0,Math.PI*2);ctx.fill();ctx.restore();ctx.fillStyle='#14223b';ctx.fillRect(boss.x-14,boss.y-25,78,10);ctx.fillStyle='#ff6c73';ctx.fillRect(boss.x-12,boss.y-23,74*(boss.hp/boss.maxHp),6);ctx.fillStyle='#fff';ctx.font='bold 14px system-ui';ctx.textAlign='center';ctx.fillText(boss.name,boss.x+25,boss.y-31);}
+  function drawPlayer(){if(!player)return;if(player.safe>0&&Math.floor(animTime*15)%2===0)return;const moving=player.grounded&&Math.abs(player.vx)>5;ctx.save();ctx.translate(player.x+player.w/2,player.y+(moving?Math.sin(player.walk)*2:0));if(player.facing<0)ctx.scale(-1,1);
+    if(save.skateboard){ctx.save();ctx.translate(0,38);ctx.rotate(moving?Math.sin(animTime*16)*.035:0);rounded(-22,-4,44,7,3);ctx.fillStyle='#19bce0';ctx.fill();ctx.fillStyle='#ffe65c';ctx.beginPath();ctx.arc(-13,5,3.2,0,Math.PI*2);ctx.arc(13,5,3.2,0,Math.PI*2);ctx.fill();ctx.restore();}
+    ctx.fillStyle='#d34e4c';rounded(-13,25,26,15,5);ctx.fill();ctx.fillStyle='#f0bd76';rounded(-16,36,13,6,3);ctx.fill();rounded(3,36,13,6,3);ctx.fill();ctx.fillStyle='#ffca43';rounded(-17,20,9,16,4);ctx.fill();ctx.fillStyle='#347fce';rounded(-12,19,24,19,5);ctx.fill();ctx.fillStyle='#f1b77a';ctx.beginPath();ctx.arc(0,12,12,0,Math.PI*2);ctx.fill();ctx.fillStyle='#593822';ctx.beginPath();ctx.arc(0,8,12,Math.PI,Math.PI*2);ctx.lineTo(12,11);ctx.quadraticCurveTo(0,6,-12,12);ctx.fill();ctx.fillStyle='#fff';ctx.beginPath();ctx.arc(4,13,3,0,Math.PI*2);ctx.fill();ctx.restore();}
+  function drawGoal(level){ctx.save();ctx.translate(level.goal,442);ctx.globalAlpha=!boss||boss.defeated?1:.4;['#ff6868','#ffbd4d','#ffe76c','#63d68e','#68c9ff'].forEach((color,i)=>{ctx.strokeStyle=color;ctx.lineWidth=8;ctx.beginPath();ctx.arc(0,0,36-i*5,Math.PI,Math.PI*2);ctx.stroke();});ctx.fillStyle='#fff7c0';ctx.beginPath();ctx.ellipse(0,0,13,8,0,0,Math.PI*2);ctx.fill();ctx.restore();}
+  function drawWorld(){if(!ctx)return;const level=LEVELS[levelIndex]||LEVELS[0];drawBackground(level);ctx.save();ctx.translate(-cameraX,0);drawPlatforms(level);stars.forEach(s=>{if(!s.taken)drawStar(s.x,s.y);});drawFirefly();enemies.forEach(drawEnemy);drawBoss();drawGoal(level);particles.forEach(p=>{ctx.globalAlpha=Math.max(0,p.life/35);ctx.fillStyle=p.color;ctx.beginPath();ctx.arc(p.x,p.y,p.size,0,Math.PI*2);ctx.fill();});ctx.globalAlpha=1;drawPlayer();ctx.restore();rounded(15,14,340,36,11);ctx.fillStyle='#153752d9';ctx.fill();ctx.fillStyle='#fff';ctx.font='bold 16px system-ui';ctx.textAlign='left';ctx.fillText(level.name+' • '+(levelIndex+1)+'/'+LEVELS.length,27,38);}
+  function frame(now){if(!lastTime)lastTime=now;const dt=Math.min((now-lastTime)/1000,.033);lastTime=now;animTime+=dt;if(state==='playing')update(dt);drawWorld();requestAnimationFrame(frame);}
+
+  window.addEventListener('keydown',event=>{
+    const key=event.key.toLowerCase();if(['arrowleft','arrowright','arrowup',' '].includes(key))event.preventDefault();
+    if(key==='arrowleft'||key==='a')keys.left=true;if(key==='arrowright'||key==='d')keys.right=true;
+    if(key==='arrowup'||key==='w'||key===' '){if(!keys.jump)jumpQueued=true;keys.jump=true;}
+    if((key==='escape'||key==='p')&&state==='playing')showPause();else if((key==='escape'||key==='p')&&state==='paused'){state='playing';screen.hidden=true;lastTime=0;}
+  });
+  window.addEventListener('keyup',event=>{const key=event.key.toLowerCase();if(key==='arrowleft'||key==='a')keys.left=false;if(key==='arrowright'||key==='d')keys.right=false;if(key==='arrowup'||key==='w'||key===' ')keys.jump=false;});
+  window.addEventListener('blur',()=>{keys.left=false;keys.right=false;keys.jump=false;if(state==='playing')showPause();});
+  document.querySelectorAll('[data-key]').forEach(button=>{
+    const key=button.dataset.key;
+    button.addEventListener('pointerdown',event=>{event.preventDefault();try{button.setPointerCapture(event.pointerId);}catch{}if(key==='jump'&&!keys.jump)jumpQueued=true;keys[key]=true;button.classList.add('pressed');});
+    const release=()=>{keys[key]=false;button.classList.remove('pressed');};
+    ['pointerup','pointercancel','lostpointercapture','pointerleave'].forEach(type=>button.addEventListener(type,release));
+  });
+  nameInput.addEventListener('keydown',event=>{if(event.key==='Enter')startAdventure();});
+  nameInput.value=save.name;renderRanking();updateHud();showMenu();requestAnimationFrame(frame);
+})();
+</script>
+</body>
+</html>
