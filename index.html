@@ -1,511 +1,1179 @@
 <!DOCTYPE html>
 <html lang="pl">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1">
-  <meta name="theme-color" content="#102b4e">
-  <meta name="description" content="NIKO POGROMCA — kolorowa, przyjazna dzieciom przygodowa platformówka.">
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <meta name="theme-color" content="#102b4e" />
   <title>NIKO POGROMCA — Strażnik Kolorów</title>
   <style>
     :root {
-      color-scheme: dark;
-      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
-      background: #102b4e;
-      color: #f5fbff;
-      font-synthesis: none;
+      --bg: #0f223f;
+      --panel: #122d4a;
+      --panel-2: #17456a;
+      --blue: #8ee1ff;
+      --sky: #7dd7ff;
+      --gold: #ffd55a;
+      --gold-dark: #d8971c;
+      --text: #f3fbff;
+      --muted: #c9ecff;
+      --border: #5ea1c6;
     }
     * { box-sizing: border-box; }
+    html, body { margin: 0; min-height: 100%; }
     body {
-      min-width: 320px;
-      min-height: 100vh;
+      font-family: system-ui, -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif;
+      background: radial-gradient(circle at top, #2d6b91 0%, #122b45 35%, #0a1629 100%);
+      color: var(--text);
+      padding: 18px;
+    }
+    .shell {
+      width: min(1120px, 100%);
+      margin: 0 auto;
+    }
+    .topbar {
+      display: flex;
+      justify-content: space-between;
+      gap: 14px;
+      margin-bottom: 12px;
+      flex-wrap: wrap;
+      align-items: center;
+    }
+    .brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+    .brand-mark {
+      width: 52px; height: 52px;
+      border-radius: 16px;
+      display: grid;
+      place-items: center;
+      font-size: 28px;
+      background: linear-gradient(#174a74, #102f4d);
+      border: 2px solid #72cce8;
+      box-shadow: 0 6px 0 rgba(0,0,0,0.25);
+    }
+    h1 {
       margin: 0;
-      padding: 20px;
-      background: radial-gradient(ellipse at 50% -10%, #245f83 0, #102b4e 58%, #0b1c36 100%);
+      font-size: clamp(1.5rem, 3vw, 2.25rem);
+      line-height: 1.1;
+      color: #fff1a8;
+      text-shadow: 0 2px 0 #7d5522;
+      letter-spacing: 0.04em;
     }
-    button, input { font: inherit; }
-    button {
-      min-height: 44px;
-      border: 2px solid #ffd35a;
+    .tagline {
+      margin: 4px 0 0;
+      font-size: .84rem;
+      color: var(--muted);
+    }
+    .hud {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: flex-end;
+      gap: 8px;
+    }
+    .badge {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      min-height: 42px;
+      padding: 6px 12px;
       border-radius: 12px;
-      padding: 9px 16px;
-      background: linear-gradient(#ffe780, #ffc83e);
-      color: #392b08;
+      background: #163a5d;
+      border: 1px solid var(--border);
+      box-shadow: inset 0 1px 0 rgba(255,255,255,.12);
       font-weight: 800;
-      cursor: pointer;
-      box-shadow: 0 4px 0 #b9821c;
-      transition: transform .12s ease, filter .12s ease;
     }
-    button:hover:not(:disabled) { filter: brightness(1.08); transform: translateY(-1px); }
-    button:active:not(:disabled) { transform: translateY(2px); box-shadow: 0 2px 0 #b9821c; }
-    button:disabled { opacity: .48; cursor: not-allowed; }
-    button.secondary { background: linear-gradient(#e4f6ff, #b8e4f7); border-color: #9bd5ed; box-shadow: 0 4px 0 #538dac; color: #143952; }
-    button.quiet { background: #18395b; border-color: #3a6585; box-shadow: 0 4px 0 #091a2d; color: #eef9ff; }
-    .shell { width: min(1120px, 100%); margin: 0 auto; }
-    .topbar { display: flex; justify-content: space-between; align-items: center; gap: 12px; margin: 0 0 12px; }
-    .brand { display: flex; align-items: center; gap: 12px; }
-    .brand-mark { display: grid; width: 52px; height: 52px; place-items: center; border: 2px solid #73d7ee; border-radius: 16px; background: #17456a; font-size: 30px; box-shadow: 0 5px 0 #09223a; }
-    h1 { margin: 0; color: #fff1a7; font-size: clamp(1.35rem, 3.5vw, 2rem); letter-spacing: .04em; line-height: 1.05; text-shadow: 0 3px #8f5b25; }
-    .tagline { margin: 4px 0 0; color: #b7eaff; font-size: .88rem; }
-    .hud { display: flex; justify-content: flex-end; gap: 8px; flex-wrap: wrap; }
-    .badge { display: inline-flex; min-height: 42px; align-items: center; gap: 7px; padding: 7px 12px; border: 1px solid #3a6685; border-radius: 12px; background: #143758; font-weight: 800; white-space: nowrap; }
-    .game-panel { overflow: hidden; border: 2px solid #417b98; border-radius: 20px; background: #0b2038; box-shadow: 0 14px 36px #0005; }
-    .stage { position: relative; overflow: hidden; background: #71d6f2; }
-    canvas { display: block; width: 100%; aspect-ratio: 16 / 9; background: #71d6f2; image-rendering: auto; }
+    .game-panel {
+      background: rgba(15, 34, 63, 0.8);
+      border: 2px solid var(--border);
+      border-radius: 20px;
+      overflow: hidden;
+      box-shadow: 0 14px 30px rgba(0,0,0,0.28);
+    }
+    .stage {
+      position: relative;
+      overflow: hidden;
+      background: var(--sky);
+    }
+    #game {
+      width: 100%;
+      display: block;
+      aspect-ratio: 16 / 9;
+      background: linear-gradient(#69d6f8, #d8fbff);
+    }
     .screen {
       position: absolute;
       inset: 0;
       display: flex;
       align-items: center;
       justify-content: center;
-      padding: clamp(12px, 3vw, 28px);
-      background: linear-gradient(90deg, #081a2bd9, #102b4dcc);
-      text-align: center;
+      background: rgba(10, 24, 38, 0.58);
+      padding: 20px;
     }
     .screen[hidden] { display: none; }
-    .card { width: min(620px, 100%); max-height: 100%; overflow: auto; padding: clamp(16px, 3vw, 28px); border: 2px solid #75c9e5; border-radius: 22px; background: linear-gradient(145deg, #17466a, #102d4c); box-shadow: 0 12px 35px #06142699; }
-    .card h2 { margin: 0 0 8px; color: #ffe985; font-size: clamp(1.5rem, 5vw, 2.7rem); line-height: 1.05; text-shadow: 0 3px #8a5524; }
-    .card p { margin: 8px 0 16px; color: #e0f6ff; line-height: 1.5; }
-    .hero-art { margin: 2px 0 8px; font-size: clamp(36px, 8vw, 68px); filter: drop-shadow(0 5px 2px #09223a); }
-    .form-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin: 14px 0; }
-    input { width: min(260px, 100%); min-height: 46px; border: 2px solid #90d5eb; border-radius: 12px; padding: 9px 12px; background: #f5fcff; color: #17324d; }
-    .button-row { display: flex; flex-wrap: wrap; justify-content: center; gap: 10px; margin-top: 12px; }
-    .level-picks { display: flex; flex-wrap: wrap; justify-content: center; gap: 8px; margin: 14px 0; }
-    .level-picks button { padding: 8px 11px; font-size: .88rem; }
-    .help { display: flex; justify-content: space-between; align-items: center; gap: 12px; flex-wrap: wrap; padding: 12px 16px; color: #d6effb; font-size: .9rem; }
-    .help strong { color: #fff1a7; }
-    .below { display: grid; grid-template-columns: 1fr auto; align-items: center; gap: 12px; margin-top: 12px; }
-    .status { min-height: 1.5em; margin: 0; color: #d5f3ff; font-weight: 700; }
-    .touch-controls { display: flex; gap: 8px; justify-content: center; }
-    .touch-controls button { min-width: 58px; min-height: 48px; padding: 6px 12px; touch-action: none; user-select: none; }
-    .touch-controls button.pressed { transform: translateY(2px); filter: brightness(.9); }
-    .rank-panel { margin-top: 14px; padding: 14px 18px; border: 1px solid #315c7c; border-radius: 16px; background: #112e4b; }
-    .rank-title { display: flex; align-items: center; justify-content: space-between; gap: 10px; }
-    .rank-title h2 { margin: 0; color: #ffe985; font-size: 1rem; }
-    .rank-panel ol { display: flex; flex-wrap: wrap; gap: 8px 28px; margin: 10px 0 0; padding-left: 24px; color: #d9f4ff; }
-    .muted { color: #a9ccdd; font-size: .85rem; }
-    .sr-only { position: absolute; width: 1px; height: 1px; padding: 0; margin: -1px; overflow: hidden; clip: rect(0,0,0,0); white-space: nowrap; border: 0; }
-    @media (max-width: 620px) {
-      body { padding: 10px; }
-      .topbar { align-items: flex-start; }
-      .brand-mark { width: 42px; height: 42px; font-size: 24px; border-radius: 13px; }
-      .tagline { font-size: .78rem; }
-      .hud { gap: 5px; }
-      .badge { min-height: 36px; padding: 5px 8px; font-size: .82rem; }
-      .help { justify-content: center; text-align: center; padding: 9px; font-size: .8rem; }
+    .card {
+      width: min(620px, 100%);
+      padding: clamp(18px, 3vw, 28px);
+      border-radius: 22px;
+      background: linear-gradient(160deg, #17466a 0%, #102d4c 100%);
+      border: 2px solid #77cadf;
+      box-shadow: 0 16px 36px rgba(0,0,0,.38);
+      text-align: center;
+    }
+    .hero-art {
+      font-size: clamp(2.4rem, 6vw, 4.2rem);
+      margin-bottom: 10px;
+      filter: drop-shadow(0 3px 0 rgba(20, 34, 53, 0.35));
+    }
+    .card h2 {
+      margin: 0 0 8px;
+      font-size: clamp(1.9rem, 5vw, 3.2rem);
+      color: #ffe885;
+      text-shadow: 0 3px 0 #7a511d;
+      line-height: 1.08;
+    }
+    .card p {
+      margin: 8px 0 16px;
+      color: var(--muted);
+      line-height: 1.5;
+    }
+    .button-row, .form-row, .level-picks {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: center;
+      gap: 10px;
+      margin: 12px 0;
+    }
+    .level-picks { margin-top: 18px; }
+    input, button {
+      font: inherit;
+    }
+    input {
+      width: min(260px, 100%);
+      min-height: 46px;
+      padding: 10px 12px;
+      border: 2px solid #9ad9ee;
+      border-radius: 12px;
+      background: #f6fbff;
+      color: #17324d;
+    }
+    button {
+      min-height: 44px;
+      padding: 9px 16px;
+      border-radius: 12px;
+      border: 2px solid #f0c44a;
+      background: linear-gradient(#ffe780, #ffc83e);
+      color: #372906;
+      font-weight: 800;
+      cursor: pointer;
+      box-shadow: 0 4px 0 #b9801c;
+      transition: transform .12s ease;
+    }
+    button:hover:not(:disabled) { transform: translateY(-1px); }
+    button:active:not(:disabled) { transform: translateY(2px); box-shadow: 0 2px 0 #b9801c; }
+    button.secondary {
+      background: linear-gradient(#e2f5ff, #bbe1f4);
+      border-color: #a8d8ee;
+      box-shadow: 0 4px 0 #518bac;
+      color: #16334f;
+    }
+    button.quiet {
+      background: linear-gradient(#1f3f5d, #193552);
+      border-color: #4a789e;
+      box-shadow: 0 4px 0 #091d32;
+      color: #eef9ff;
+    }
+    button:disabled {
+      opacity: .48;
+      cursor: not-allowed;
+    }
+    .muted {
+      color: #bfe3f5;
+      font-size: .9rem;
+    }
+    .help {
+      display: flex;
+      justify-content: space-between;
+      gap: 10px;
+      flex-wrap: wrap;
+      padding: 12px 16px;
+      font-size: .9rem;
+      color: var(--muted);
+    }
+    .help strong { color: #fff1a8; }
+    .below {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      gap: 12px;
+      align-items: center;
+      padding-top: 12px;
+    }
+    .status {
+      margin: 0;
+      min-height: 1.5em;
+      color: #ebf9ff;
+      font-weight: 700;
+    }
+    .touch-controls {
+      display: flex;
+      justify-content: center;
+      gap: 8px;
+    }
+    .touch-controls button {
+      min-width: 64px;
+      min-height: 50px;
+      padding: 8px 12px;
+      touch-action: none;
+    }
+    .rank-panel {
+      margin-top: 14px;
+      padding: 14px 18px;
+      background: rgba(16, 34, 60, 0.76);
+      border: 1px solid #3d698a;
+      border-radius: 16px;
+    }
+    .rank-head {
+      display: flex;
+      justify-content: space-between;
+      gap: 12px;
+      align-items: center;
+      margin-bottom: 8px;
+      flex-wrap: wrap;
+    }
+    .rank-panel h3 {
+      margin: 0;
+      font-size: 1rem;
+      color: #ffe885;
+    }
+    .rank-panel ol {
+      margin: 8px 0 0;
+      padding-left: 22px;
+      color: #e3f7ff;
+      line-height: 1.8;
+    }
+    .sr-only {
+      position: absolute;
+      width: 1px; height: 1px;
+      padding: 0; margin: -1px;
+      overflow: hidden; clip: rect(0,0,0,0);
+      white-space: nowrap; border: 0;
+    }
+    @media (max-width: 640px) {
+      body { padding: 12px; }
       .below { grid-template-columns: 1fr; }
       .status { text-align: center; }
-      .touch-controls button { min-width: 68px; }
-      .rank-panel ol { display: block; }
+      .touch-controls { justify-content: center; }
+      .help { justify-content: center; text-align: center; }
     }
-    @media (prefers-reduced-motion: reduce) { *, *::before, *::after { scroll-behavior: auto !important; transition-duration: .01ms !important; } }
   </style>
 </head>
 <body>
   <main class="shell">
     <header class="topbar">
-      <div class="brand"><div class="brand-mark" aria-hidden="true">🌈</div><div><h1>NIKO POGROMCA</h1><p class="tagline">Strażnik Kolorów — ruszaj na przygodę!</p></div></div>
-      <div class="hud" aria-label="Wynik gry">
+      <div class="brand">
+        <div class="brand-mark" aria-hidden="true">🌈</div>
+        <div>
+          <h1>NIKO POGROMCA</h1>
+          <p class="tagline">Strażnik Kolorów — przygoda dopiero się zaczyna!</p>
+        </div>
+      </div>
+      <div class="hud" aria-label="HUD gry">
         <span class="badge">⭐ <span id="score">0</span></span>
-        <span class="badge" id="lives" aria-label="Życia">❤️❤️❤️</span>
+        <span class="badge" id="lives">❤️❤️❤️</span>
         <span class="badge">🌟 <span id="levelLabel">Menu</span></span>
       </div>
     </header>
 
     <section class="game-panel" aria-label="Gra Niko Pogromca">
       <div class="stage">
-        <canvas id="game" width="960" height="540" aria-label="Kolorowa platformówka. Skacz, zbieraj gwiazdki i omijaj stworki."></canvas>
-        <section class="screen" id="screen" aria-live="polite">
+        <canvas id="game" width="960" height="540" aria-label="Platformówka Niko Pogromca"></canvas>
+
+        <div class="screen" id="screen" aria-live="polite">
           <div class="card">
-            <div class="hero-art" aria-hidden="true">🧒 ⭐ 🌈</div>
+            <div class="hero-art" aria-hidden="true">🧒✨🌈</div>
             <h2 id="screenTitle">NIKO POGROMCA</h2>
             <p id="screenText">Szary Cień ukradł kolory! Skacz, zbieraj gwiazdki, ratuj świetliki i przywróć radość krainie.</p>
-            <div class="form-row" id="nameRow"><label class="sr-only" for="playerName">Pseudonim gracza</label><input id="playerName" maxlength="16" placeholder="Wpisz swój pseudonim" autocomplete="off"></div>
-            <div class="level-picks" id="levelPicks" aria-label="Wybierz odblokowany poziom"></div>
+
+            <div class="form-row" id="nameRow">
+              <label class="sr-only" for="playerName">Pseudonim gracza</label>
+              <input id="playerName" maxlength="16" placeholder="Wpisz swój pseudonim" autocomplete="off" />
+            </div>
+
+            <div class="level-picks" id="levelPicks" aria-label="Poziomy"></div>
             <div class="button-row" id="screenButtons"></div>
-            <p class="muted" id="screenHint">Sterowanie: ← → lub A/D, skok: ↑ / W / spacja. Na telefonie użyj przycisków pod grą.</p>
+            <p class="muted" id="screenHint">Sterowanie: ← → lub A/D, skok: ↑ / W / spacja.</p>
           </div>
-        </section>
+        </div>
       </div>
-      <div class="help"><span><strong>Ruch:</strong> ← → lub A/D</span><span><strong>Skok:</strong> ↑ / W / spacja</span><span><strong>Cel:</strong> zbierz skarby i dotrzyj do tęczy</span></div>
+
+      <div class="help">
+        <span><strong>Ruch:</strong> ← → / A D</span>
+        <span><strong>Skok:</strong> ↑ / W / spacja</span>
+        <span><strong>Cel:</strong> zbieraj skarby i dojdziesz do tęczy</span>
+      </div>
     </section>
-    <div class="below"><p class="status" id="status" aria-live="polite">Wpisz pseudonim i rozpocznij przygodę!</p>
-      <div class="touch-controls" aria-label="Sterowanie dotykowe"><button data-key="left" aria-label="Idź w lewo">◀</button><button data-key="jump" aria-label="Skocz">⤒</button><button data-key="right" aria-label="Idź w prawo">▶</button></div>
+
+    <div class="below">
+      <p class="status" id="status">Wpisz pseudonim i rozpocznij przygodę!</p>
+      <div class="touch-controls" aria-label="Sterowanie dotykowe">
+        <button type="button" data-key="left" aria-label="W lewo">◀</button>
+        <button type="button" data-key="jump" aria-label="Skok">⤒</button>
+        <button type="button" data-key="right" aria-label="W prawo">▶</button>
+      </div>
     </div>
-    <section class="rank-panel"><div class="rank-title"><h2>🏆 Najlepszy wynik w tej przeglądarce</h2><span class="muted">Ranking lokalny</span></div><ol id="ranking"></ol><p class="muted">Postęp i wyniki zapisują się tylko na tym urządzeniu.</p></section>
+
+    <section class="rank-panel" aria-label="Ranking lokalny">
+      <div class="rank-head">
+        <h3>🏆 Najlepszy wynik</h3>
+        <span class="muted">Lokalny ranking</span>
+      </div>
+      <ol id="ranking"></ol>
+    </section>
   </main>
+
 <script>
 (() => {
-  "use strict";
-  const SAVE_KEY = "niko-pogromca-save-v1";
-  const BOARD_KEY = "niko-pogromca-ranking-v1";
-  const W = 960, H = 540, GRAVITY = 0.58, MAX_FALL = 14;
+  'use strict';
+
+  const SAVE_KEY = 'niko-pogromca-save-v1';
+  const BOARD_KEY = 'niko-pogromca-ranking-v1';
   const LEVELS = [
     {
-      name: "Zaczarowany Las", sky: ["#65cfee", "#e4f9d5"], ground: "#75482e", grass: "#49b653", width: 1700, goal: 1580,
-      platforms: [[0,480,340,60],[390,430,180,30],[620,380,190,30],[860,440,210,30],[1120,380,180,30],[1350,460,350,80]],
-      stars: [[160,430],[460,380],[700,330],[960,390],[1200,330],[1450,410]], firefly: [870,395], enemies: [{x:260,y:448,min:220,max:315,speed:1.15},{x:900,y:408,min:875,max:1020,speed:1.3},{x:1440,y:428,min:1380,max:1630,speed:1.2}]
+      name: 'Zaczarowany Las',
+      width: 1700,
+      goal: 1580,
+      skyTop: '#6dd7ff',
+      skyBottom: '#e9fff4',
+      platforms: [
+        [0,480,330,60], [390,430,180,30], [620,380,190,30], [860,440,210,30], [1120,380,180,30], [1350,460,350,80]
+      ],
+      stars: [[160,430],[460,380],[700,330],[960,390],[1200,330],[1450,410]],
+      firefly: [870,395],
+      enemies: [
+        { x: 260, y: 448, min: 220, max: 315, speed: 1.1 },
+        { x: 920, y: 408, min: 875, max: 1010, speed: 1.2 },
+        { x: 1440, y: 428, min: 1380, max: 1620, speed: 1.0 }
+      ]
     },
     {
-      name: "Wyspy Bąbelków", sky: ["#52bfe9", "#e8fbff"], ground: "#83603d", grass: "#53c5a0", width: 1800, goal: 1680,
-      platforms: [[0,480,260,60],[310,420,160,28],[520,350,160,28],[750,410,170,28],[990,330,170,28],[1230,390,170,28],[1470,460,330,80]],
-      stars: [[370,370],[580,300],[810,360],[1050,280],[1290,340],[1580,410]], firefly: [1000,280], enemies: [{x:340,y:388,min:320,max:430,speed:1.35},{x:790,y:378,min:760,max:875,speed:1.5},{x:1515,y:428,min:1490,max:1740,speed:1.45}]
+      name: 'Wyspy Bąbelków',
+      width: 1800,
+      goal: 1680,
+      skyTop: '#58b8ea',
+      skyBottom: '#ebfbff',
+      platforms: [
+        [0,480,260,60], [310,420,160,28], [520,350,160,28], [750,410,170,28], [990,330,170,28], [1230,390,170,28], [1470,460,330,80]
+      ],
+      stars: [[370,370],[580,300],[810,360],[1050,280],[1290,340],[1580,410]],
+      firefly: [1000,280],
+      enemies: [
+        { x: 340, y: 388, min: 320, max: 430, speed: 1.3 },
+        { x: 790, y: 378, min: 760, max: 875, speed: 1.5 },
+        { x: 1515, y: 428, min: 1490, max: 1740, speed: 1.3 }
+      ]
     },
     {
-      name: "Góry Chmur", sky: ["#759be8", "#f2eaff"], ground: "#66517f", grass: "#9cdb8c", width: 1900, goal: 1780,
-      platforms: [[0,480,300,60],[350,400,150,28],[560,330,160,28],[790,390,160,28],[1020,300,160,28],[1260,360,170,28],[1500,300,150,28],[1690,460,210,80]],
-      stars: [[400,350],[610,280],[840,340],[1070,250],[1310,310],[1540,250]], firefly: [1260,310], enemies: [{x:375,y:368,min:355,max:455,speed:1.4},{x:810,y:358,min:800,max:900,speed:1.6},{x:1505,y:268,min:1505,max:1600,speed:1.5}]
+      name: 'Góry Chmur',
+      width: 1900,
+      goal: 1780,
+      skyTop: '#799dea',
+      skyBottom: '#f9f0ff',
+      platforms: [
+        [0,480,300,60], [350,400,150,28], [560,330,160,28], [790,390,160,28], [1020,300,160,28], [1260,360,170,28], [1500,300,150,28], [1690,460,210,80]
+      ],
+      stars: [[400,350],[610,280],[840,340],[1070,250],[1310,310],[1540,250]],
+      firefly: [1260,310],
+      enemies: [
+        { x: 375, y: 368, min: 355, max: 455, speed: 1.4 },
+        { x: 810, y: 358, min: 800, max: 900, speed: 1.6 },
+        { x: 1505, y: 268, min: 1500, max: 1605, speed: 1.5 }
+      ]
     }
   ];
-  const canvas = document.querySelector("#game");
-  const ctx = canvas.getContext("2d");
-  const screen = document.querySelector("#screen"), titleEl = document.querySelector("#screenTitle");
-  const textEl = document.querySelector("#screenText"), hintEl = document.querySelector("#screenHint");
-  const buttonsEl = document.querySelector("#screenButtons"), picksEl = document.querySelector("#levelPicks");
-  const nameRow = document.querySelector("#nameRow"), nameInput = document.querySelector("#playerName");
-  const statusEl = document.querySelector("#status"), scoreEl = document.querySelector("#score");
-  const livesEl = document.querySelector("#lives"), levelLabel = document.querySelector("#levelLabel");
-  const rankingEl = document.querySelector("#ranking");
+
+  const canvas = document.getElementById('game');
+  const ctx = canvas.getContext('2d');
+  const screen = document.getElementById('screen');
+  const screenTitle = document.getElementById('screenTitle');
+  const screenText = document.getElementById('screenText');
+  const screenHint = document.getElementById('screenHint');
+  const screenButtons = document.getElementById('screenButtons');
+  const levelPicks = document.getElementById('levelPicks');
+  const nameRow = document.getElementById('nameRow');
+  const nameInput = document.getElementById('playerName');
+  const statusEl = document.getElementById('status');
+  const scoreEl = document.getElementById('score');
+  const livesEl = document.getElementById('lives');
+  const levelLabel = document.getElementById('levelLabel');
+  const rankingEl = document.getElementById('ranking');
+
   const keys = { left: false, right: false, jump: false };
+
   let save = loadSave();
   let board = loadBoard();
-  let state = "menu", current = 0, cameraX = 0, lastTime = 0, animTime = 0;
-  let score = 0, lives = 3, player, stars = [], enemies = [], firefly, particles = [];
-  let jumpQueued = false, soundOn = true, audioContext = null;
+  let state = 'menu';
+  let currentLevel = 0;
+  let score = 0;
+  let lives = 3;
+  let cameraX = 0;
+  let lastTime = 0;
+  let animTime = 0;
+  let soundOn = true;
+  let audioCtx = null;
+  let player = null;
+  let stars = [];
+  let enemies = [];
+  let firefly = { x: 0, y: 0, rescued: false };
+  let particles = [];
+  let jumpQueued = false;
 
   function loadSave() {
     try {
-      const raw = JSON.parse(localStorage.getItem(SAVE_KEY) || "null");
-      if (!raw || typeof raw !== "object") return { name: "", score: 0, unlocked: 0, completed: [], collected: [], rescued: [] };
+      const raw = JSON.parse(localStorage.getItem(SAVE_KEY) || 'null');
+      if (!raw || typeof raw !== 'object') {
+        return { name: '', score: 0, unlocked: 0, completed: [], collected: [], rescued: [] };
+      }
       return {
-        name: typeof raw.name === "string" ? raw.name.slice(0,16) : "",
-        score: Number.isFinite(raw.score) && raw.score >= 0 ? Math.floor(raw.score) : 0,
-        unlocked: Number.isInteger(raw.unlocked) ? Math.max(0, Math.min(LEVELS.length-1, raw.unlocked)) : 0,
-        completed: Array.isArray(raw.completed) ? raw.completed.filter(n => Number.isInteger(n) && n >= 0 && n < LEVELS.length) : [],
-        collected: Array.isArray(raw.collected) ? raw.collected.filter(v => typeof v === "string") : [],
-        rescued: Array.isArray(raw.rescued) ? raw.rescued.filter(n => Number.isInteger(n) && n >= 0 && n < LEVELS.length) : []
+        name: typeof raw.name === 'string' ? raw.name.slice(0, 16) : '',
+        score: Number.isFinite(raw.score) ? Math.max(0, Math.floor(raw.score)) : 0,
+        unlocked: Number.isInteger(raw.unlocked) ? Math.max(0, Math.min(LEVELS.length - 1, raw.unlocked)) : 0,
+        completed: Array.isArray(raw.completed) ? raw.completed.filter((n) => Number.isInteger(n) && n >= 0 && n < LEVELS.length) : [],
+        collected: Array.isArray(raw.collected) ? raw.collected.filter((v) => typeof v === 'string') : [],
+        rescued: Array.isArray(raw.rescued) ? raw.rescued.filter((n) => Number.isInteger(n) && n >= 0 && n < LEVELS.length) : []
       };
-    } catch { return { name: "", score: 0, unlocked: 0, completed: [], collected: [], rescued: [] }; }
+    } catch {
+      return { name: '', score: 0, unlocked: 0, completed: [], collected: [], rescued: [] };
+    }
   }
+
   function loadBoard() {
     try {
-      const raw = JSON.parse(localStorage.getItem(BOARD_KEY) || "{}");
-      if (!raw || typeof raw !== "object" || Array.isArray(raw)) return {};
-      const clean = {};
-      Object.entries(raw).forEach(([name, value]) => { if (typeof name === "string" && Number.isFinite(value) && value >= 0) clean[name.slice(0,16)] = Math.floor(value); });
-      return clean;
-    } catch { return {}; }
+      const raw = JSON.parse(localStorage.getItem(BOARD_KEY) || '{}');
+      if (!raw || typeof raw !== 'object' || Array.isArray(raw)) return {};
+      const out = {};
+      Object.keys(raw).forEach((key) => {
+        if (typeof key === 'string' && Number.isFinite(raw[key]) && raw[key] >= 0) {
+          out[key.slice(0, 16)] = Math.floor(raw[key]);
+        }
+      });
+      return out;
+    } catch {
+      return {};
+    }
   }
+
   function persist() {
     try {
       localStorage.setItem(SAVE_KEY, JSON.stringify(save));
       localStorage.setItem(BOARD_KEY, JSON.stringify(board));
-    } catch { statusEl.textContent = "Nie udało się zapisać gry. Sprawdź wolne miejsce w przeglądarce."; }
-    updateHud(); renderRanking();
+    } catch {
+      setStatus('Nie udało się zapisać postępu. Spróbuj ponownie.');
+    }
+    updateHud();
+    renderRanking();
   }
+
+  function setStatus(text) {
+    statusEl.textContent = text;
+  }
+
   function updateHud() {
     scoreEl.textContent = String(score);
-    livesEl.textContent = "❤️".repeat(Math.max(0,lives)) + "🤍".repeat(Math.max(0,3-lives));
-    levelLabel.textContent = state === "playing" ? `${current+1}/${LEVELS.length}` : (state === "victory" ? "Gotowe!" : "Menu");
+    livesEl.textContent = '❤️'.repeat(Math.max(0, lives)) + '🤍'.repeat(Math.max(0, 3 - lives));
+    if (state === 'playing') {
+      levelLabel.textContent = (currentLevel + 1) + '/' + LEVELS.length;
+    } else if (state === 'victory') {
+      levelLabel.textContent = 'Gotowe!';
+    } else {
+      levelLabel.textContent = 'Menu';
+    }
   }
+
   function renderRanking() {
     rankingEl.replaceChildren();
-    const entries = Object.entries(board).sort((a,b) => b[1]-a[1] || a[0].localeCompare(b[0],"pl")).slice(0,5);
-    if (!entries.length) { const li = document.createElement("li"); li.textContent = "Zagraj i ustanów pierwszy rekord!"; rankingEl.appendChild(li); return; }
-    entries.forEach(([name, value]) => { const li = document.createElement("li"); li.textContent = `${name} — ${value} pkt`; rankingEl.appendChild(li); });
+    const entries = Object.entries(board).sort((a, b) => b[1] - a[1] || a[0].localeCompare(b[0], 'pl')).slice(0, 5);
+    if (!entries.length) {
+      const li = document.createElement('li');
+      li.textContent = 'Zagraj i ustanów pierwszy rekord!';
+      rankingEl.appendChild(li);
+      return;
+    }
+    entries.forEach(([name, value]) => {
+      const li = document.createElement('li');
+      li.textContent = name + ' — ' + value + ' pkt';
+      rankingEl.appendChild(li);
+    });
   }
-  function saveScore() {
-    const name = save.name || "Niko";
+
+  function clearButtons() {
+    screenButtons.replaceChildren();
+  }
+
+  function addButton(label, action, className) {
+    const button = document.createElement('button');
+    button.type = 'button';
+    button.textContent = label;
+    if (className) button.className = className;
+    button.addEventListener('click', action);
+    screenButtons.appendChild(button);
+  }
+
+  function cleanName(value) {
+    const text = String(value || '').replace(/[<>]/g, '').trim().slice(0, 16);
+    return text || 'Niko';
+  }
+
+  function setScreen(title, text, hint, showNameInput) {
+    screenTitle.textContent = title;
+    screenText.textContent = text;
+    screenHint.textContent = hint;
+    nameRow.style.display = showNameInput ? 'flex' : 'none';
+    screen.hidden = false;
+  }
+
+  function showMenu() {
+    state = 'menu';
+    clearButtons();
+    setScreen('NIKO POGROMCA', 'Szary Cień ukradł kolory! Skacz, zbieraj gwiazdki, ratuj świetliki i przywróć radość krainie.', 'Sterowanie: ← → lub A/D, skok: ↑ / W / spacja. Na telefonie użyj przycisków pod grą.', true);
+    nameInput.value = save.name;
+    levelPicks.replaceChildren();
+    addButton('Rozpocznij przygodę', startAdventure);
+    if (save.completed.length || save.score > 0) {
+      addButton('Kontynuuj', continueAdventure, 'secondary');
+    }
+    addButton(soundOn ? '🔊 Dźwięk: włączony' : '🔇 Dźwięk: wyłączony', toggleSound, 'quiet');
+    renderLevelPicks();
+    setStatus('Wpisz pseudonim i rozpocznij przygodę!');
+    updateHud();
+  }
+
+  function showPause() {
+    if (state !== 'playing') return;
+    state = 'paused';
+    clearButtons();
+    setScreen('Pauza', 'Niko odpoczywa chwilkę. Gdy będziesz gotowy, wracaj do przygody!', 'Możesz wznowić grę albo wrócić do menu.', false);
+    addButton('Wznów grę', () => {
+      state = 'playing';
+      screen.hidden = true;
+      lastTime = 0;
+      setStatus('Gra wznowiona.');
+    });
+    addButton('Menu główne', showMenu, 'secondary');
+  }
+
+  function showEnd(type, title, text) {
+    state = type;
+    clearButtons();
+    setScreen(title, text, 'Wynik tej przygody: ' + score + ' punktów.', false);
+    if (type === 'levelComplete') {
+      if (currentLevel < LEVELS.length - 1) {
+        addButton('Następny poziom', () => startLevel(currentLevel + 1));
+      } else {
+        addButton('Zobacz finał', finishAdventure);
+      }
+    }
+    if (type === 'gameover') {
+      addButton('Spróbuj jeszcze raz', () => startLevel(currentLevel), 'secondary');
+    }
+    if (type === 'victory' || type === 'gameover') {
+      addButton('Menu główne', showMenu, 'secondary');
+    }
+    if (type === 'levelComplete') {
+      addButton('Menu główne', showMenu, 'secondary');
+    }
+    updateHud();
+  }
+
+  function renderLevelPicks() {
+    levelPicks.replaceChildren();
+    LEVELS.forEach((level, index) => {
+      const button = document.createElement('button');
+      button.type = 'button';
+      button.textContent = (index + 1) + '. ' + level.name;
+      button.disabled = index > save.unlocked;
+      button.className = 'secondary';
+      button.addEventListener('click', () => {
+        save.name = cleanName(nameInput.value || save.name);
+        persist();
+        startLevel(index);
+      });
+      levelPicks.appendChild(button);
+    });
+  }
+
+  function startAdventure() {
+    save.name = cleanName(nameInput.value || save.name);
+    score = 0;
+    lives = 3;
+    persist();
+    const firstOpen = LEVELS.findIndex((_, index) => !save.completed.includes(index));
+    const startIndex = firstOpen === -1 ? 0 : Math.min(firstOpen, save.unlocked);
+    startLevel(startIndex);
+  }
+
+  function continueAdventure() {
+    save.name = cleanName(nameInput.value || save.name);
+    score = save.score || 0;
+    lives = 3;
+    persist();
+    const next = LEVELS.findIndex((_, index) => !save.completed.includes(index));
+    const startIndex = next === -1 ? save.unlocked : Math.min(next, save.unlocked);
+    startLevel(startIndex);
+  }
+
+  function saveCurrentScore() {
+    const name = save.name || 'Niko';
     board[name] = Math.max(board[name] || 0, score);
     save.score = Math.max(save.score || 0, score);
     persist();
   }
-  function setStatus(text) { statusEl.textContent = text; }
-  function clearButtons() { buttonsEl.replaceChildren(); }
-  function addButton(label, action, style = "") {
-    const button = document.createElement("button"); button.textContent = label;
-    if (style) button.className = style;
-    button.addEventListener("click", action); buttonsEl.appendChild(button); return button;
-  }
-  function showMenu() {
-    state = "menu"; screen.hidden = false; nameRow.hidden = false; picksEl.replaceChildren(); clearButtons();
-    titleEl.textContent = "NIKO POGROMCA"; textEl.textContent = "Szary Cień ukradł kolory! Skacz, zbieraj gwiazdki, ratuj świetliki i przywróć radość krainie.";
-    hintEl.textContent = "Sterowanie: ← → lub A/D, skok: ↑ / W / spacja. Na telefonie użyj przycisków pod grą.";
-    nameInput.value = save.name; addButton("Rozpocznij przygodę", startAdventure);
-    if (save.completed.length || save.score > 0) addButton("Kontynuuj", continueAdventure, "secondary");
-    addButton(soundOn ? "🔊 Dźwięk: włączony" : "🔇 Dźwięk: wyłączony", toggleSound, "quiet");
-    setStatus("Wybierz pseudonim i rozpocznij przygodę!"); updateHud();
-  }
-  function showPause() {
-    state = "paused"; screen.hidden = false; nameRow.hidden = true; picksEl.replaceChildren(); clearButtons();
-    titleEl.textContent = "Pauza"; textEl.textContent = "Niko odpoczywa chwilkę. Gdy będziesz gotowy, wracaj do przygody!";
-    hintEl.textContent = "Możesz wznowić grę albo wrócić do menu.";
-    addButton("Wznów grę", () => { state = "playing"; screen.hidden = true; lastTime = 0; });
-    addButton("Menu główne", showMenu, "secondary"); updateHud();
-  }
-  function showEnd(kind, heading, body) {
-    state = kind; screen.hidden = false; nameRow.hidden = true; picksEl.replaceChildren(); clearButtons();
-    titleEl.textContent = heading; textEl.textContent = body; hintEl.textContent = `Wynik tej przygody: ${score} punktów.`;
-    if (kind === "levelComplete" && current < LEVELS.length-1) addButton("Następny poziom", () => startLevel(current+1));
-    if (kind === "levelComplete" && current === LEVELS.length-1) addButton("Zobacz finał", finishAdventure);
-    if (kind === "gameover") addButton("Spróbuj jeszcze raz", restartRun);
-    if (kind === "victory" || kind === "gameover") addButton("Wróć do menu", showMenu, "secondary");
-    if (kind === "levelComplete") addButton("Menu główne", showMenu, "secondary");
-    updateHud();
-  }
-  function renderLevelPicks() {
-    picksEl.replaceChildren();
-    LEVELS.forEach((level, index) => {
-      const button = document.createElement("button");
-      button.className = "secondary"; button.textContent = `${index+1}. ${level.name}`;
-      button.disabled = index > save.unlocked;
-      button.addEventListener("click", () => { save.name = cleanName(nameInput.value); persist(); score = save.score || 0; lives = 3; startLevel(index); });
-      picksEl.appendChild(button);
-    });
-  }
-  function cleanName(value) {
-    const cleaned = String(value || "").replace(/[<>]/g, "").trim().slice(0,16);
-    return cleaned || "Niko";
-  }
-  function startAdventure() {
-    save.name = cleanName(nameInput.value); score = 0; lives = 3;
-    persist(); renderLevelPicks();
-    const firstUnfinished = LEVELS.findIndex((_, i) => !save.completed.includes(i));
-    startLevel(firstUnfinished === -1 ? 0 : Math.min(firstUnfinished, save.unlocked));
-  }
-  function continueAdventure() {
-    save.name = cleanName(nameInput.value || save.name); score = save.score || 0; lives = 3; persist();
-    const next = LEVELS.findIndex((_, i) => !save.completed.includes(i));
-    startLevel(next < 0 ? save.unlocked : Math.min(next, save.unlocked));
-  }
-  function startLevel(index) {
-    current = Math.max(0, Math.min(LEVELS.length-1,index));
-    const data = LEVELS[current];
-    player = { x: 42, y: 420, w: 30, h: 42, vx: 0, vy: 0, grounded: false, facing: 1, invulnerable: 0, walk: 0 };
-    cameraX = 0; firefly = { x: data.firefly[0], y: data.firefly[1], rescued: save.rescued.includes(current) };
-    stars = data.stars.map((point,i) => ({ x: point[0], y: point[1], id: `${current}-${i}`, collected: save.collected.includes(`${current}-${i}`) }));
-    enemies = data.enemies.map(enemy => ({ ...enemy, direction: 1, alive: true, phase: Math.random()*6 }));
-    particles = []; state = "playing"; screen.hidden = true; nameRow.hidden = true; jumpQueued = false; lastTime = 0;
-    setStatus(`Poziom ${current+1}: ${data.name}. Powodzenia, ${save.name}!`); updateHud();
-  }
-  function restartRun() { score = 0; lives = 3; startLevel(current); }
-  function finishAdventure() {
-    saveScore(); showEnd("victory", "Udało się! 🌈", "Niko pokonał Szary Cień i przywrócił kolory całej krainie. Dzięki Tobie znów śpiewają rzeki, świecą świetliki i wszyscy mieszkańcy są bezpieczni!");
-  }
+
   function toggleSound() {
     soundOn = !soundOn;
-    if (state === "menu") showMenu();
+    showMenu();
   }
-  function playTone(freq, duration = .12, type = "sine", volume = .045) {
+
+  function playTone(frequency, duration, type, volume) {
     if (!soundOn) return;
     try {
-      const Audio = window.AudioContext || window.webkitAudioContext;
-      if (!Audio) return;
-      if (!audioContext) audioContext = new Audio();
-      if (audioContext.state === "suspended") audioContext.resume();
-      const osc = audioContext.createOscillator(), gain = audioContext.createGain();
-      osc.type = type; osc.frequency.setValueAtTime(freq, audioContext.currentTime);
-      gain.gain.setValueAtTime(volume, audioContext.currentTime);
-      gain.gain.exponentialRampToValueAtTime(.001, audioContext.currentTime + duration);
-      osc.connect(gain); gain.connect(audioContext.destination); osc.start(); osc.stop(audioContext.currentTime + duration);
-    } catch { /* Audio jest dodatkiem; gra działa bez niego. */ }
+      const AudioCtor = window.AudioContext || window.webkitAudioContext;
+      if (!AudioCtor) return;
+      if (!audioCtx) audioCtx = new AudioCtor();
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      const osc = audioCtx.createOscillator();
+      const gain = audioCtx.createGain();
+      osc.type = type;
+      osc.frequency.value = frequency;
+      gain.gain.value = volume;
+      gain.gain.exponentialRampToValueAtTime(0.0001, audioCtx.currentTime + duration);
+      osc.connect(gain);
+      gain.connect(audioCtx.destination);
+      osc.start();
+      osc.stop(audioCtx.currentTime + duration);
+    } catch {
+      // Audio nie jest konieczne do działania gry.
+    }
   }
-  function soundCollect() { playTone(740,.08,"sine"); setTimeout(() => playTone(990,.1,"sine"),65); }
-  function addPoints(value) { score += value; updateHud(); }
-  function burst(x,y,color,count=9) {
-    for (let i=0;i<count;i++) particles.push({x,y,vx:(Math.random()-.5)*5,vy:(Math.random()-.8)*5,life:30+Math.random()*15,color,size:3+Math.random()*4});
+
+  function soundCollect() {
+    playTone(740, 0.08, 'sine', 0.04);
+    setTimeout(() => playTone(980, 0.1, 'sine', 0.04), 60);
   }
+
+  function burst(x, y, color, count) {
+    for (let i = 0; i < count; i++) {
+      particles.push({
+        x: x + (Math.random() - 0.5) * 8,
+        y: y + (Math.random() - 0.5) * 8,
+        vx: (Math.random() - 0.5) * 6,
+        vy: -2 - Math.random() * 3,
+        life: 30 + Math.random() * 20,
+        size: 3 + Math.random() * 4,
+        color: color
+      });
+    }
+  }
+
+  function startLevel(index) {
+    currentLevel = Math.max(0, Math.min(LEVELS.length - 1, index));
+    const level = LEVELS[currentLevel];
+    player = {
+      x: 42,
+      y: 420,
+      w: 30,
+      h: 42,
+      vx: 0,
+      vy: 0,
+      grounded: false,
+      facing: 1,
+      invulnerable: 0,
+      walk: 0
+    };
+    stars = level.stars.map((point, i) => ({
+      x: point[0],
+      y: point[1],
+      id: currentLevel + '-' + i,
+      collected: save.collected.includes(currentLevel + '-' + i)
+    }));
+    enemies = level.enemies.map((enemy) => ({
+      ...enemy,
+      direction: 1,
+      alive: true,
+      phase: Math.random() * 10,
+      width: 32,
+      height: 28
+    }));
+    firefly = {
+      x: level.firefly[0],
+      y: level.firefly[1],
+      rescued: save.rescued.includes(currentLevel)
+    };
+    particles = [];
+    cameraX = 0;
+    statesPlaying();
+    setStatus('Poziom ' + (currentLevel + 1) + ': ' + level.name + '. Powodzenia, ' + (save.name || 'Niko') + '!');
+    updateHud();
+  }
+
+  function statesPlaying() {
+    state = 'playing';
+    screen.hidden = true;
+    lastTime = 0;
+  }
+
+  function addPoints(value) {
+    score += value;
+    updateHud();
+  }
+
   function collectItems() {
-    for (const star of stars) {
-      if (star.collected) continue;
-      if (Math.abs(player.x+player.w/2-star.x)<27 && Math.abs(player.y+player.h/2-star.y)<32) {
+    stars.forEach((star) => {
+      if (star.collected) return;
+      if (Math.abs(player.x + player.w / 2 - star.x) < 28 && Math.abs(player.y + player.h / 2 - star.y) < 30) {
         star.collected = true;
-        if (!save.collected.includes(star.id)) { save.collected.push(star.id); addPoints(10); persist(); soundCollect(); burst(star.x,star.y,"#ffe75c"); }
+        if (!save.collected.includes(star.id)) {
+          save.collected.push(star.id);
+        }
+        addPoints(10);
+        soundCollect();
+        burst(star.x, star.y, '#ffed72', 12);
       }
-    }
-    if (!firefly.rescued && Math.abs(player.x+player.w/2-firefly.x)<33 && Math.abs(player.y+player.h/2-firefly.y)<40) {
+    });
+
+    if (!firefly.rescued && Math.abs(player.x + player.w / 2 - firefly.x) < 28 && Math.abs(player.y + player.h / 2 - firefly.y) < 28) {
       firefly.rescued = true;
-      if (!save.rescued.includes(current)) { save.rescued.push(current); addPoints(50); persist(); }
-      setStatus("Świetlik uratowany! +50 punktów ✨"); soundCollect(); burst(firefly.x,firefly.y,"#a8ff75",16);
+      if (!save.rescued.includes(currentLevel)) {
+        save.rescued.push(currentLevel);
+      }
+      addPoints(50);
+      setStatus('Świetlik uratowany! +50 punktów ✨');
+      soundCollect();
+      burst(firefly.x, firefly.y, '#a8ff6d', 18);
     }
   }
+
   function damagePlayer() {
     if (player.invulnerable > 0) return;
-    lives--; player.invulnerable = 1.5; player.vy = -7; player.vx = -player.facing*3;
-    burst(player.x+player.w/2,player.y+player.h/2,"#ff7584",12); playTone(180,.2,"triangle",.06); updateHud();
+    lives -= 1;
+    player.invulnerable = 1.2;
+    player.vx = -player.facing * 170;
+    player.vy = -220;
+    burst(player.x + player.w / 2, player.y + player.h / 2, '#ff7a7a', 16);
+    playTone(180, 0.18, 'triangle', 0.05);
+    updateHud();
     if (lives <= 0) {
-      saveScore(); showEnd("gameover", "Koniec wyprawy", "Niko potrzebuje odpoczynku. Spróbuj jeszcze raz — zebrane wcześniej gwiazdki i odblokowane poziomy zostaną zapisane!");
-    } else setStatus(`Ojej! Zostało żyć: ${lives}. Uważaj na stworki!`);
+      saveCurrentScore();
+      setStatus('Niko upadł. Spróbuj jeszcze raz!');
+      showEnd('gameover', 'Koniec wyprawy', 'Niko potrzebuje chwili odpoczynku. Spróbuj jeszcze raz — przygoda trwa!');
+      return;
+    }
+    setStatus('Ojej! Zostało żyć: ' + lives + '. Uważaj na stworki!');
   }
-  function update(dt) {
-    if (state !== "playing") return;
-    const level = LEVELS[current];
-    const move = (keys.right ? 1 : 0) - (keys.left ? 1 : 0);
-    player.vx = move*230;
-    if (move) { player.facing = move; player.walk += dt*11; }
-    if (jumpQueued && player.grounded) { player.vy = -510; player.grounded = false; playTone(380,.09,"triangle",.025); }
-    jumpQueued = false;
-    const oldY = player.y;
-    player.x = Math.max(0,Math.min(level.width-player.w,player.x+player.vx*dt));
-    player.vy = Math.min(MAX_FALL*60, player.vy+GRAVITY*60*dt);
-    player.y += player.vy*dt; player.grounded = false;
-    for (const [x,y,w] of level.platforms) {
-      const overlapsX = player.x+player.w > x && player.x < x+w;
-      const crossedTop = oldY+player.h <= y && player.y+player.h >= y;
-      if (overlapsX && crossedTop && player.vy >= 0) { player.y = y-player.h; player.vy = 0; player.grounded = true; }
-    }
-    for (const enemy of enemies) {
-      if (!enemy.alive) continue;
-      enemy.x += enemy.direction*enemy.speed*60*dt;
-      if (enemy.x < enemy.min || enemy.x+32 > enemy.max) enemy.direction *= -1;
-      const overlap = player.x < enemy.x+32 && player.x+player.w > enemy.x && player.y < enemy.y+30 && player.y+player.h > enemy.y;
-      if (overlap && player.invulnerable <= 0) {
-        if (player.vy > 80 && oldY+player.h <= enemy.y+13) {
-          enemy.alive = false; player.vy = -350; addPoints(25); soundCollect(); burst(enemy.x+16,enemy.y+14,"#a8ed73",14); setStatus("Sprytny skok! Stworek bezpiecznie odleciał. +25 pkt");
-        } else damagePlayer();
-      }
-    }
-    if (player.invulnerable > 0) player.invulnerable = Math.max(0,player.invulnerable-dt);
-    if (player.y > H+80 && state === "playing") {
-      lives--; player.x = 42; player.y = 420; player.vx = 0; player.vy = 0; player.invulnerable = 1.2; updateHud(); playTone(180,.2,"triangle",.06);
-      if (lives <= 0) { saveScore(); showEnd("gameover","Koniec wyprawy","Niko wpadł do przepaści i potrzebuje odpoczynku. Spróbuj jeszcze raz!"); }
-      else setStatus(`Ups, Niko spadł! Zostało żyć: ${lives}.`);
-    }
-    if (state !== "playing") return;
-    collectItems();
-    for (const p of particles) { p.x+=p.vx; p.y+=p.vy; p.vy+=.12; p.life--; }
-    particles = particles.filter(p => p.life > 0);
-    cameraX = Math.max(0,Math.min(level.width-W,player.x-W*.36));
-    if (player.x > level.goal) completeLevel();
-  }
+
   function completeLevel() {
-    state = "levelComplete";
-    if (!save.completed.includes(current)) { save.completed.push(current); addPoints(100); }
-    save.unlocked = Math.max(save.unlocked,Math.min(current+1,LEVELS.length-1));
-    save.score = Math.max(save.score || 0,score); saveScore();
-    const last = current === LEVELS.length-1;
-    showEnd("levelComplete", last ? "Ostatni poziom ukończony!" : "Poziom ukończony! 🎉",
-      last ? "Niko dotarł do tęczy! Jeszcze chwila i cała kraina odzyska swoje kolory." : `Brawo, ${save.name}! +100 punktów. Przed Tobą kolejna przygoda: ${LEVELS[current+1].name}.`);
+    state = 'levelComplete';
+    if (!save.completed.includes(currentLevel)) {
+      save.completed.push(currentLevel);
+      addPoints(100);
+    }
+    save.unlocked = Math.max(save.unlocked, Math.min(currentLevel + 1, LEVELS.length - 1));
+    saveCurrentScore();
+    const last = currentLevel === LEVELS.length - 1;
+    showEnd(
+      'levelComplete',
+      last ? 'Ostatni poziom ukończony! 🌈' : 'Poziom ukończony! 🎉',
+      last
+        ? 'Niko dotarł do tęczy! Kraina odzyskała kolory i wszyscy mieszkańcy wracają do radości.'
+        : 'Brawo! +100 punktów. Przed Tobą kolejna przygoda: ' + LEVELS[currentLevel + 1].name + '.'
+    );
     renderLevelPicks();
   }
-  function roundRect(x,y,w,h,r) {
-    ctx.beginPath(); ctx.roundRect(x,y,w,h,r); ctx.fill();
-  }
-  function drawBackground(level) {
-    const gradient = ctx.createLinearGradient(0,0,0,H); gradient.addColorStop(0,level.sky[0]); gradient.addColorStop(1,level.sky[1]);
-    ctx.fillStyle=gradient; ctx.fillRect(0,0,W,H);
-    // Dalekie, przesuwające się wzgórza.
-    for (let i=0;i<6;i++) {
-      const x=((i*230-cameraX*.16)%1450+1450)%1450-200, y=385+(i%2)*30;
-      ctx.fillStyle=i%2 ? "#75c77f" : "#61b979"; ctx.beginPath(); ctx.ellipse(x,y+100,190,145,0,Math.PI,Math.PI*2); ctx.fill();
+
+  function update(dt) {
+    if (state !== 'playing' || !player) return;
+
+    const level = LEVELS[currentLevel];
+    const move = (keys.right ? 1 : 0) - (keys.left ? 1 : 0);
+
+    if (move !== 0) {
+      player.facing = move;
+      player.walk += dt * 11;
     }
-    // Chmurki w parallaxie.
-    for (let i=0;i<7;i++) {
-      const x=((i*195-cameraX*.28)%1300+1300)%1300-100, y=62+(i%3)*49;
-      ctx.fillStyle="#ffffffb8"; ctx.beginPath(); ctx.arc(x,y,23,0,Math.PI*2); ctx.arc(x+25,y-10,30,0,Math.PI*2); ctx.arc(x+54,y,22,0,Math.PI*2); ctx.fill();
+
+    player.vx = move * 220;
+    if (jumpQueued && player.grounded) {
+      player.vy = -420;
+      player.grounded = false;
+      playTone(420, 0.1, 'triangle', 0.03);
     }
-  }
-  function drawPlatform(level) {
-    for (const [x,y,w,h] of level.platforms) {
-      ctx.fillStyle=level.ground; roundRect(x,y+8,w,h,7);
-      ctx.fillStyle=level.grass; roundRect(x,y,w,15,7);
-      ctx.fillRect(x,y+8,w,7);
-      ctx.fillStyle="#ffffff24"; ctx.fillRect(x+10,y+20,Math.max(0,w-20),3);
-      for (let px=x+12;px<x+w-8;px+=38) {
-        ctx.fillStyle=level.grass; ctx.beginPath(); ctx.moveTo(px,y+2); ctx.lineTo(px+5,y-6); ctx.lineTo(px+9,y+3); ctx.fill();
+    jumpQueued = false;
+
+    const prevY = player.y;
+    player.x += player.vx * dt;
+    player.x = Math.max(0, Math.min(level.width - player.w, player.x));
+    player.vy = Math.min(760, player.vy + 1100 * dt);
+    player.y += player.vy * dt;
+    player.grounded = false;
+
+    for (const [px, py, pw, ph] of level.platforms) {
+      const overlapsX = player.x + player.w > px && player.x < px + pw;
+      const wasAbove = prevY + player.h <= py && player.y + player.h >= py;
+      if (overlapsX && wasAbove && player.vy >= 0) {
+        player.y = py - player.h;
+        player.vy = 0;
+        player.grounded = true;
       }
     }
+
+    if (player.invulnerable > 0) {
+      player.invulnerable = Math.max(0, player.invulnerable - dt);
+    }
+
+    enemies.forEach((enemy) => {
+      if (!enemy.alive) return;
+      enemy.x += enemy.direction * enemy.speed * 60 * dt;
+      if (enemy.x <= enemy.min || enemy.x + enemy.width >= enemy.max) {
+        enemy.direction *= -1;
+      }
+
+      const collides = player.x < enemy.x + enemy.width && player.x + player.w > enemy.x && player.y < enemy.y + enemy.height && player.y + player.h > enemy.y;
+      if (!collides) return;
+
+      const stomp = prevY + player.h <= enemy.y + 8 && player.vy > 80;
+      if (stomp) {
+        enemy.alive = false;
+        player.vy = -260;
+        addPoints(25);
+        soundCollect();
+        burst(enemy.x + 16, enemy.y + 10, '#a5ff74', 16);
+        setStatus('Sprytny skok! +25 punktów.');
+      } else {
+        damagePlayer();
+      }
+    });
+
+    collectItems();
+
+    particles.forEach((p) => {
+      p.x += p.vx;
+      p.y += p.vy;
+      p.vy += 0.18;
+      p.life -= 1;
+    });
+    particles = particles.filter((p) => p.life > 0);
+
+    if (player.y > canvas.height + 80) {
+      player.x = 42;
+      player.y = 420;
+      player.vy = 0;
+      lives -= 1;
+      player.invulnerable = 1.2;
+      updateHud();
+      playTone(180, 0.18, 'triangle', 0.05);
+      if (lives <= 0) {
+        saveCurrentScore();
+        showEnd('gameover', 'Koniec wyprawy', 'Niko spadł do przepaści. Spróbuj jeszcze raz!');
+        return;
+      }
+      setStatus('Ups! Niko spadł. Zostało żyć: ' + lives + '.');
+    }
+
+    cameraX = Math.max(0, Math.min(level.width - canvas.width, player.x - 320));
+
+    if (player.x > level.goal) {
+      completeLevel();
+    }
   }
-  function drawStar(x,y,scale=1) {
-    ctx.save(); ctx.translate(x,y); ctx.rotate(animTime*1.6); ctx.scale(scale,scale);
-    ctx.beginPath(); for(let i=0;i<10;i++){ const r=i%2===0?13:6.5, a=-Math.PI/2+i*Math.PI/5; const px=Math.cos(a)*r,py=Math.sin(a)*r; if(i===0)ctx.moveTo(px,py);else ctx.lineTo(px,py); }
-    ctx.closePath(); ctx.fillStyle="#ffe35e"; ctx.fill(); ctx.strokeStyle="#d79324"; ctx.lineWidth=2; ctx.stroke(); ctx.restore();
+
+  function roundedRectPath(x, y, w, h, r) {
+    const radius = Math.min(r, w / 2, h / 2);
+    ctx.beginPath();
+    ctx.moveTo(x + radius, y);
+    ctx.lineTo(x + w - radius, y);
+    ctx.quadraticCurveTo(x + w, y, x + w, y + radius);
+    ctx.lineTo(x + w, y + h - radius);
+    ctx.quadraticCurveTo(x + w, y + h, x + w - radius, y + h);
+    ctx.lineTo(x + radius, y + h);
+    ctx.quadraticCurveTo(x, y + h, x, y + h - radius);
+    ctx.lineTo(x, y + radius);
+    ctx.quadraticCurveTo(x, y, x + radius, y);
+    ctx.closePath();
   }
-  function drawFirefly() {
-    if (firefly.rescued) return;
-    const bob=Math.sin(animTime*4)*5;
-    ctx.save(); ctx.translate(firefly.x,firefly.y+bob);
-    ctx.globalAlpha=.22; ctx.fillStyle="#c9ff69"; ctx.beginPath(); ctx.arc(0,0,24,0,Math.PI*2); ctx.fill(); ctx.globalAlpha=1;
-    ctx.fillStyle="#b9ff56"; ctx.beginPath(); ctx.ellipse(-5,-6,6,9,-.6,0,Math.PI*2); ctx.ellipse(5,-6,6,9,.6,0,Math.PI*2); ctx.fill();
-    ctx.fillStyle="#ffef8a"; ctx.beginPath(); ctx.arc(0,1,7,0,Math.PI*2); ctx.fill();
-    ctx.fillStyle="#243b4b"; ctx.beginPath(); ctx.arc(-2,-1,1.3,0,Math.PI*2); ctx.arc(3,-1,1.3,0,Math.PI*2); ctx.fill(); ctx.restore();
+
+  function drawBackground(level) {
+    const gradient = ctx.createLinearGradient(0, 0, 0, canvas.height);
+    gradient.addColorStop(0, level.skyTop);
+    gradient.addColorStop(1, level.skyBottom);
+    ctx.fillStyle = gradient;
+    ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+    for (let i = 0; i < 6; i++) {
+      const x = ((i * 220 - cameraX * 0.18) % 1500 + 1500) % 1500 - 200;
+      const y = 380 + (i % 2) * 32;
+      ctx.fillStyle = i % 2 ? '#7ccf7a' : '#6dc075';
+      ctx.beginPath();
+      ctx.ellipse(x, y + 110, 180, 110, 0, 0, Math.PI * 2);
+      ctx.fill();
+    }
+
+    for (let i = 0; i < 8; i++) {
+      const x = ((i * 175 - cameraX * 0.3) % 1400 + 1400) % 1400 - 120;
+      const y = 50 + (i % 3) * 55;
+      ctx.fillStyle = 'rgba(255,255,255,0.72)';
+      ctx.beginPath();
+      ctx.arc(x, y, 22, 0, Math.PI * 2);
+      ctx.arc(x + 24, y - 8, 26, 0, Math.PI * 2);
+      ctx.arc(x + 52, y, 21, 0, Math.PI * 2);
+      ctx.fill();
+    }
   }
-  function drawEnemy(enemy) {
-    if (!enemy.alive) return;
-    const bob=Math.sin(animTime*7+enemy.phase)*2;
-    ctx.save(); ctx.translate(enemy.x+16,enemy.y+bob);
-    ctx.fillStyle="#24354d"; ctx.beginPath(); ctx.ellipse(0,18,18,6,0,0,Math.PI*2); ctx.fill();
-    ctx.fillStyle="#8cc85a"; ctx.beginPath(); ctx.ellipse(0,0,16,14,0,0,Math.PI*2); ctx.fill();
-    ctx.fillStyle="#6ca640"; ctx.beginPath(); ctx.arc(-9,-9,5,0,Math.PI*2); ctx.arc(9,-9,5,0,Math.PI*2); ctx.fill();
-    ctx.fillStyle="#fff"; ctx.beginPath(); ctx.arc(-5,-2,4,0,Math.PI*2); ctx.arc(6,-2,4,0,Math.PI*2); ctx.fill();
-    ctx.fillStyle="#23334a"; ctx.beginPath(); ctx.arc(-4,-2,1.7,0,Math.PI*2); ctx.arc(7,-2,1.7,0,Math.PI*2); ctx.fill();
-    ctx.strokeStyle="#34452b"; ctx.lineWidth=2; ctx.beginPath(); ctx.arc(1,4,5,.15,Math.PI-.15); ctx.stroke(); ctx.restore();
+
+  function drawPlatforms(level) {
+    level.platforms.forEach(([x, y, w, h]) => {
+      roundedRectPath(x, y, w, h, 8);
+      ctx.fillStyle = '#7d4c2d';
+      ctx.fill();
+      ctx.fillStyle = '#4cba68';
+      roundedRectPath(x, y, w, 14, 8);
+      ctx.fill();
+      ctx.fillStyle = '#2a8f50';
+      for (let px = x + 12; px < x + w - 8; px += 36) {
+        ctx.fillRect(px, y + 3, 10, 8);
+      }
+    });
   }
-  function drawPlayer() {
-    if (!player) return;
-    if (player.invulnerable>0 && Math.floor(animTime*14)%2===0) return;
-    const running=Math.abs(player.vx)>1, bob=player.grounded && running ? Math.sin(player.walk)*2 : 0;
-    const x=player.x+player.w/2, y=player.y+bob;
-    ctx.save(); ctx.translate(x,y); if(player.facing<0)ctx.scale(-1,1);
-    // Cień, buty, plecak, ciało i głowa — proste, własne rysunki bez zewnętrznych zasobów.
-    ctx.fillStyle="#18344a55"; ctx.beginPath(); ctx.ellipse(0,player.h+2,18,5,0,0,Math.PI*2); ctx.fill();
-    ctx.fillStyle="#db504d"; roundRect(-13,25,26,15,7);
-    ctx.fillStyle="#f3bb64"; roundRect(-16,36,13,6,3); roundRect(3,36,13,6,3);
-    ctx.fillStyle="#ffcb43"; roundRect(-17,21,9,16,4);
-    ctx.fillStyle="#367fd1"; roundRect(-12,20,24,18,5);
-    ctx.fillStyle="#f3b77b"; ctx.beginPath(); ctx.arc(0,13,12,0,Math.PI*2); ctx.fill();
-    ctx.fillStyle="#593723"; ctx.beginPath(); ctx.arc(0,8,12,Math.PI,Math.PI*2); ctx.lineTo(12,11); ctx.quadraticCurveTo(3,5,-12,12); ctx.fill();
-    ctx.fillStyle="#fff"; ctx.beginPath(); ctx.arc(4,14,3.2,0,Math.PI*2); ctx.fill();
-    ctx.fillStyle="#25364b"; ctx.beginPath(); ctx.arc(5,14,1.5,0,Math.PI*2); ctx.fill();
-    ctx.strokeStyle="#9a4b39"; ctx.lineWidth=1.5; ctx.beginPath(); ctx.arc(5,18,3,.2,Math.PI-.2); ctx.stroke();
+
+  function drawStar(x, y) {
+    ctx.save();
+    ctx.translate(x, y + Math.sin(animTime * 2 + x) * 4);
+    ctx.rotate(animTime * 2.5);
+    ctx.fillStyle = '#ffe25d';
+    ctx.strokeStyle = '#d8931d';
+    ctx.lineWidth = 2;
+    ctx.beginPath();
+    for (let i = 0; i < 10; i++) {
+      const angle = -Math.PI / 2 + (i * Math.PI / 5);
+      const radius = i % 2 === 0 ? 12 : 5;
+      const px = Math.cos(angle) * radius;
+      const py = Math.sin(angle) * radius;
+      if (i === 0) ctx.moveTo(px, py); else ctx.lineTo(px, py);
+    }
+    ctx.closePath();
+    ctx.fill();
+    ctx.stroke();
     ctx.restore();
   }
+
+  function drawFirefly() {
+    if (firefly.rescued) return;
+    const bob = Math.sin(animTime * 6) * 5;
+    ctx.save();
+    ctx.translate(firefly.x, firefly.y + bob);
+    ctx.fillStyle = 'rgba(194, 255, 95, 0.3)';
+    ctx.beginPath();
+    ctx.arc(0, 0, 22, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#d5ff76';
+    ctx.beginPath();
+    ctx.arc(0, 0, 7, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
+
+  function drawEnemy(enemy) {
+    if (!enemy.alive) return;
+    const bob = Math.sin(animTime * 8 + enemy.phase) * 2;
+    ctx.save();
+    ctx.translate(enemy.x + 16, enemy.y + bob);
+    ctx.fillStyle = '#27384c';
+    ctx.fillRect(-15, 14, 30, 9);
+    ctx.fillStyle = '#89cc5c';
+    ctx.beginPath();
+    ctx.arc(0, 0, 14, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#fff';
+    ctx.beginPath();
+    ctx.arc(-5, -1, 3, 0, Math.PI * 2);
+    ctx.arc(5, -1, 3, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.fillStyle = '#1a2635';
+    ctx.beginPath();
+    ctx.arc(-5, -1, 1.5, 0, Math.PI * 2);
+    ctx.arc(5, -1, 1.5, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
+
+  function drawPlayer() {
+    if (!player) return;
+    if (player.invulnerable > 0 && Math.floor(animTime * 14) % 2 === 0) return;
+
+    const bob = player.grounded && Math.abs(player.vx) > 10 ? Math.sin(animTime * 18) * 2 : 0;
+    ctx.save();
+    ctx.translate(player.x + player.w / 2, player.y + player.h / 2 + bob);
+    if (player.facing < 0) ctx.scale(-1, 1);
+
+    ctx.fillStyle = '#253d57';
+    ctx.fillRect(-10, 8, 20, 18);
+    ctx.fillStyle = '#f1bd75';
+    ctx.beginPath(); ctx.arc(0, -12, 12, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#1d7ed2';
+    roundedRectPath(-14, -4, 28, 18, 6);
+    ctx.fill();
+    ctx.fillStyle = '#ffcb43';
+    roundedRectPath(-18, 10, 9, 16, 4);
+    roundedRectPath(9, 10, 9, 16, 4);
+    ctx.fill();
+    ctx.fillStyle = '#f2998d';
+    ctx.fillRect(-13, 13, 26, 9);
+    ctx.fillStyle = '#fff';
+    ctx.beginPath(); ctx.arc(5, -13, 2.7, 0, Math.PI * 2); ctx.fill();
+    ctx.fillStyle = '#1a2333';
+    ctx.beginPath(); ctx.arc(5, -13, 1.5, 0, Math.PI * 2); ctx.fill();
+    ctx.restore();
+  }
+
+  function drawGoal(level) {
+    const x = level.goal;
+    ctx.save();
+    ctx.translate(x, 442);
+    ctx.shadowColor = 'rgba(255,255,140,0.8)';
+    ctx.shadowBlur = 18;
+    for (let i = 0; i < 5; i++) {
+      ctx.strokeStyle = ['#ff6767', '#ffbd55', '#ffe876', '#79d77d', '#6dc6ff'][i];
+      ctx.lineWidth = 8;
+      ctx.beginPath();
+      ctx.arc(0, 0, 34 - i * 5, Math.PI, Math.PI * 2);
+      ctx.stroke();
+    }
+    ctx.shadowBlur = 0;
+    ctx.fillStyle = '#f7f1b5';
+    ctx.beginPath();
+    ctx.arc(0, 0, 10, 0, Math.PI * 2);
+    ctx.fill();
+    ctx.restore();
+  }
+
+  function drawParticles() {
+    particles.forEach((p) => {
+      ctx.globalAlpha = Math.max(0, p.life / 40);
+      ctx.fillStyle = p.color;
+      ctx.beginPath();
+      ctx.arc(p.x, p.y, p.size, 0, Math.PI * 2);
+      ctx.fill();
+    });
+    ctx.globalAlpha = 1;
+  }
+
   function drawWorld() {
-    const level=LEVELS[current] || LEVELS[0]; drawBackground(level);
-    ctx.save(); ctx.translate(-cameraX,0);
-    drawPlatform(level);
-    stars.forEach(star=>{if(!star.collected)drawStar(star.x,star.y+Math.sin(animTime*3+star.x)*3);});
-    drawFirefly(); enemies.forEach(drawEnemy);
-    // Brama tęczy i delikatny blask.
-    ctx.save(); ctx.translate(level.goal,441); ctx.shadowColor="#fff28a"; ctx.shadowBlur=22;
-    for(let i=0;i<4;i++){ctx.strokeStyle=["#ff625e","#ffbd42","#ffe96b","#64d98a"][i];ctx.lineWidth=9;ctx.beginPath();ctx.arc(0,0,38-i*7,Math.PI,Math.PI*2);ctx.stroke();}
-    ctx.shadowBlur=0; ctx.fillStyle="#fff8c6"; ctx.beginPath(); ctx.ellipse(0,0,15,8,0,0,Math.PI*2); ctx.fill(); ctx.restore();
-    particles.forEach(p=>{ctx.globalAlpha=Math.max(0,p.life/45);ctx.fillStyle=p.color;ctx.beginPath();ctx.arc(p.x,p.y,p.size,0,Math.PI*2);ctx.fill();}); ctx.globalAlpha=1;
-    drawPlayer(); ctx.restore();
-    // Czytelny pasek poziomu w canvasie.
-    ctx.fillStyle="#12334dbb"; ctx.beginPath(); ctx.roundRect(15,14,250,38,12); ctx.fill();
-    ctx.fillStyle="#fff"; ctx.font="bold 16px system-ui"; ctx.textAlign="left"; ctx.fillText(`${level.name}  •  ${current+1}/${LEVELS.length}`,27,39);
+    const level = LEVELS[currentLevel] || LEVELS[0];
+    drawBackground(level);
+    ctx.save();
+    ctx.translate(-cameraX, 0);
+    drawPlatforms(level);
+    stars.forEach((star) => {
+      if (!star.collected) drawStar(star.x, star.y);
+    });
+    drawFirefly();
+    enemies.forEach(drawEnemy);
+    drawGoal(level);
+    drawPlayer();
+    ctx.restore();
+
+    ctx.fillStyle = 'rgba(17, 52, 83, 0.74)';
+    roundedRectPath(16, 16, 260, 36, 12);
+    ctx.fill();
+    ctx.fillStyle = '#f5fcff';
+    ctx.font = 'bold 16px system-ui';
+    ctx.textAlign = 'left';
+    ctx.fillText(level.name + ' • poziom ' + (currentLevel + 1) + '/' + LEVELS.length, 28, 39);
+    drawParticles();
   }
-  function frame(now) {
-    if (!lastTime) lastTime=now;
-    const dt=Math.min((now-lastTime)/1000,.033); lastTime=now; animTime+=dt;
-    if (state === "playing") update(dt);
-    drawWorld(); requestAnimationFrame(frame);
+
+  function frame(ts) {
+    if (!lastTime) lastTime = ts;
+    const dt = Math.min((ts - lastTime) / 1000, 0.033);
+    lastTime = ts;
+    animTime += dt;
+
+    if (state === 'playing') {
+      update(dt);
+    }
+
+    drawWorld();
+    requestAnimationFrame(frame);
   }
-  window.addEventListener("keydown", event => {
-    const key=event.key.toLowerCase();
-    if (["arrowleft","arrowright","arrowup"," "].includes(key)) event.preventDefault();
-    if (key==="arrowleft" || key==="a") keys.left=true;
-    if (key==="arrowright" || key==="d") keys.right=true;
-    if ((key==="arrowup" || key==="w" || key===" ") && !keys.jump) { keys.jump=true; jumpQueued=true; }
-    if ((key==="escape" || key==="p") && state==="playing") showPause();
-    if ((key==="escape" || key==="p") && state==="paused") { state="playing"; screen.hidden=true; lastTime=0; }
+
+  function onKeyDown(event) {
+    const key = event.key.toLowerCase();
+    if (['arrowleft', 'arrowright', 'arrowup', ' '].includes(key)) {
+      event.preventDefault();
+    }
+    if (key === 'arrowleft' || key === 'a') keys.left = true;
+    if (key === 'arrowright' || key === 'd') keys.right = true;
+    if (key === 'arrowup' || key === 'w' || key === ' ') {
+      keys.jump = true;
+      jumpQueued = true;
+    }
+    if ((key === 'escape' || key === 'p') && state === 'playing') {
+      showPause();
+    }
+    if ((key === 'escape' || key === 'p') && state === 'paused') {
+      state = 'playing';
+      screen.hidden = true;
+      setStatus('Gra wznowiona.');
+    }
+  }
+
+  function onKeyUp(event) {
+    const key = event.key.toLowerCase();
+    if (key === 'arrowleft' || key === 'a') keys.left = false;
+    if (key === 'arrowright' || key === 'd') keys.right = false;
+    if (key === 'arrowup' || key === 'w' || key === ' ') keys.jump = false;
+  }
+
+  function onTouchButton(key, isPressed) {
+    if (key === 'left') keys.left = isPressed;
+    if (key === 'right') keys.right = isPressed;
+    if (key === 'jump') {
+      keys.jump = isPressed;
+      if (isPressed) jumpQueued = true;
+    }
+  }
+
+  document.querySelectorAll('[data-key]').forEach((button) => {
+    const key = button.dataset.key;
+    button.addEventListener('pointerdown', (event) => {
+      event.preventDefault();
+      onTouchButton(key, true);
+      button.classList.add('pressed');
+    });
+    ['pointerup', 'pointercancel', 'lostpointercapture'].forEach((type) => {
+      button.addEventListener(type, () => {
+        onTouchButton(key, false);
+        button.classList.remove('pressed');
+      });
+    });
   });
-  window.addEventListener("keyup", event => {
-    const key=event.key.toLowerCase();
-    if (key==="arrowleft" || key==="a") keys.left=false;
-    if (key==="arrowright" || key==="d") keys.right=false;
-    if (key==="arrowup" || key==="w" || key===" ") keys.jump=false;
+
+  nameInput.addEventListener('keydown', (event) => {
+    if (event.key === 'Enter') startAdventure();
   });
-  window.addEventListener("blur", () => { keys.left=false; keys.right=false; keys.jump=false; if(state==="playing")showPause(); });
-  document.querySelectorAll("[data-key]").forEach(button => {
-    const key=button.dataset.key;
-    button.addEventListener("pointerdown", event => { event.preventDefault(); button.setPointerCapture(event.pointerId); if(key==="jump" && !keys.jump)jumpQueued=true; keys[key]=true; button.classList.add("pressed"); });
-    const release=()=>{keys[key]=false;button.classList.remove("pressed");};
-    ["pointerup","pointercancel","lostpointercapture"].forEach(type=>button.addEventListener(type,release));
+
+  window.addEventListener('keydown', onKeyDown);
+  window.addEventListener('keyup', onKeyUp);
+  window.addEventListener('blur', () => {
+    keys.left = false;
+    keys.right = false;
+    keys.jump = false;
+    if (state === 'playing') showPause();
   });
-  nameInput.addEventListener("keydown", event => { if(event.key==="Enter")startAdventure(); });
-  nameInput.value=save.name;
-  renderRanking(); updateHud(); showMenu();
+
+  nameInput.value = save.name;
+  renderRanking();
+  updateHud();
+  showMenu();
   requestAnimationFrame(frame);
 })();
 </script>
